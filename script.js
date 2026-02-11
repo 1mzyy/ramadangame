@@ -1511,6 +1511,25 @@ function performJoinFamily(code) {
     saveUserData();
 }
 
+
+// ===== TOGGLE ROLES SECTION =====
+function toggleRoles() {
+    const content = document.getElementById('rolesContent');
+    const icon = document.querySelector('.toggle-icon');
+    
+    if (!content || !icon) return;
+    
+    if (content.style.display === 'none' || getComputedStyle(content).display === 'none') {
+        content.style.display = 'block';
+        icon.innerHTML = '▲';
+        icon.style.transform = 'rotate(180deg)';
+    } else {
+        content.style.display = 'none';
+        icon.innerHTML = '▼';
+        icon.style.transform = 'rotate(0deg)';
+    }
+}
+
 // ---------- REST OF THE FUNCTIONS (SAME AS BEFORE) ----------
 // ... (All previous game functions: toggleTheme, updateFamilyDisplay, 
 //      updateGoalDisplay, addTreat, claimReward, morningCheckIn, 
