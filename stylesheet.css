@@ -697,6 +697,221 @@ body.dark-mode #reflectionsList::-webkit-scrollbar-thumb {
     background: #f5d742;
 }
 
+
+/* ===== ROLES SECTION STYLES ===== */
+.roles-card {
+    background: linear-gradient(145deg, rgba(126,159,111,0.15), rgba(180,150,80,0.15));
+    border: 2px solid #d4af37;
+    border-radius: 20px;
+    margin-bottom: 25px;
+    overflow: hidden;
+}
+
+.roles-header {
+    cursor: pointer;
+    user-select: none;
+    padding: 15px 20px;
+    background: rgba(212, 175, 55, 0.1);
+    border-radius: 20px 20px 0 0;
+}
+
+.roles-header h3 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 !important;
+    border-bottom: none !important;
+    color: #d4af37;
+}
+
+.toggle-icon {
+    font-size: 1.2rem;
+    transition: transform 0.3s;
+    display: inline-block;
+}
+
+.roles-content {
+    padding: 20px;
+}
+
+.role-item {
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+    margin-bottom: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    border-left: 5px solid #d4af37;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.role-item:hover {
+    transform: translateX(5px);
+    box-shadow: 0 5px 15px rgba(212, 175, 55, 0.2);
+}
+
+.role-icon {
+    font-size: 3rem;
+    min-width: 80px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.role-info {
+    flex: 1;
+}
+
+.role-info h4 {
+    color: #d4af37;
+    margin-bottom: 8px;
+    font-size: 1.3rem;
+    font-weight: bold;
+}
+
+.role-desc {
+    color: #5f4c3b;
+    font-size: 1rem;
+    margin-bottom: 15px;
+    line-height: 1.5;
+}
+
+.role-bonus {
+    background: rgba(212, 175, 55, 0.15);
+    padding: 10px 15px;
+    border-radius: 40px;
+    margin-bottom: 12px;
+    display: inline-block;
+    border: 1px dashed #d4af37;
+}
+
+.bonus-tag {
+    background: #d4af37;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 30px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    margin-right: 12px;
+    display: inline-block;
+}
+
+.bonus-text {
+    color: #5f7a4a;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.role-special {
+    font-size: 0.95rem;
+    color: #7d9a6c;
+    padding: 12px;
+    background: rgba(125, 154, 108, 0.15);
+    border-radius: 12px;
+    border-left: 3px solid #7d9a6c;
+}
+
+.role-special strong {
+    color: #5f7a4a;
+}
+
+.roles-footer {
+    text-align: center;
+    margin-top: 25px;
+    padding: 20px;
+    background: rgba(212, 175, 55, 0.1);
+    border-radius: 15px;
+    color: #5f4c3b;
+    font-size: 0.95rem;
+    font-style: italic;
+}
+
+/* ===== DARK MODE ROLE STYLES ===== */
+body.dark-mode .roles-card {
+    background: linear-gradient(145deg, rgba(30, 58, 90, 0.8), rgba(20, 45, 70, 0.8));
+    border-color: #ffd700;
+}
+
+body.dark-mode .roles-header {
+    background: rgba(255, 215, 0, 0.15);
+}
+
+body.dark-mode .role-desc {
+    color: #e6d5b8;
+}
+
+body.dark-mode .bonus-text {
+    color: #ffecb3;
+}
+
+body.dark-mode .role-special {
+    background: rgba(30, 58, 90, 0.8);
+    color: #f5d742;
+    border-left-color: #ffd700;
+}
+
+body.dark-mode .role-special strong {
+    color: #ffd700;
+}
+
+body.dark-mode .roles-footer {
+    background: rgba(255, 215, 0, 0.1);
+    color: #e6d5b8;
+}
+
+/* ===== ROLE TAGS & BADGES ===== */
+.role-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 30px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    margin-right: 8px;
+    margin-bottom: 5px;
+}
+
+.badge-guardian { background: #1e3a5a; color: white; }
+.badge-seeker { background: #7d9a6c; color: white; }
+.badge-nourisher { background: #b38f40; color: white; }
+.badge-connector { background: #8a7c6d; color: white; }
+.badge-healer { background: #9b7e5c; color: white; }
+.badge-illuminator { background: #d4af37; color: white; }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .role-item {
+        flex-direction: column;
+        text-align: center;
+        padding: 15px;
+    }
+    
+    .role-icon {
+        font-size: 2.5rem;
+        min-width: auto;
+    }
+    
+    .role-bonus {
+        display: block;
+        text-align: center;
+    }
+    
+    .bonus-tag {
+        display: block;
+        margin-right: 0;
+        margin-bottom: 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .role-info h4 {
+        font-size: 1.1rem;
+    }
+    
+    .role-desc {
+        font-size: 0.9rem;
+    }
+}
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .card > div[style*="grid-template-columns"] {
