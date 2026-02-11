@@ -103,6 +103,262 @@
                 </div>
             </div>
 
+
+            <!-- ROLES DESCRIPTION CARD - EXPANDABLE -->
+<div class="card roles-card">
+    <div class="roles-header" onclick="toggleRoles()">
+        <h3><i class="fas fa-users-cog"></i> Character Roles Guide <span class="toggle-icon">▼</span></h3>
+    </div>
+    <div id="rolesContent" class="roles-content" style="display: none;">
+        <!-- Guardian -->
+        <div class="role-item">
+            <div class="role-icon">🛡️</div>
+            <div class="role-info">
+                <h4>The Guardian</h4>
+                <p class="role-desc">The protector and anchor of the family. Excels at keeping everyone connected and spiritually grounded.</p>
+                <div class="role-bonus">
+                    <span class="bonus-tag">✨ Family Bonus</span>
+                    <span class="bonus-text">+2 points when 3+ family members check in</span>
+                </div>
+                <div class="role-special">
+                    <strong>Special Ability:</strong> "Legacy Blessing" - Your consistent worship grants bonus points to all players on weekends
+                </div>
+            </div>
+        </div>
+        
+        <!-- Seeker -->
+        <div class="role-item">
+            <div class="role-icon">📖</div>
+            <div class="role-info">
+                <h4>The Seeker</h4>
+                <p class="role-desc">Passionate about learning and teaching. Always seeking deeper understanding of the Qur'an and Islam.</p>
+                <div class="role-bonus">
+                    <span class="bonus-tag">✨ Qur'an Bonus</span>
+                    <span class="bonus-text">Double points for Qur'an reading (30+ min = 6 points!)</span>
+                </div>
+                <div class="role-special">
+                    <strong>Special Ability:</strong> "Tadabbur Vision" - Can earn double points for Qur'an reflection and sharing insights
+                </div>
+            </div>
+        </div>
+        
+        <!-- Nourisher -->
+        <div class="role-item">
+            <div class="role-icon">🍽️</div>
+            <div class="role-info">
+                <h4>The Nourisher</h4>
+                <p class="role-desc">Feeds body and soul. Brings the family together through food, hospitality, and generosity.</p>
+                <div class="role-bonus">
+                    <span class="bonus-tag">✨ Iftar Bonus</span>
+                    <span class="bonus-text">+1 point per guest when hosting iftar (max +5)</span>
+                </div>
+                <div class="role-special">
+                    <strong>Special Ability:</strong> "Iftar Multiplication" - Hosting iftar earns points × number of guests
+                </div>
+            </div>
+        </div>
+        
+        <!-- Connector -->
+        <div class="role-item">
+            <div class="role-icon">🤝</div>
+            <div class="role-info">
+                <h4>The Connector</h4>
+                <p class="role-desc">Builds bridges between family members. Keeps everyone in touch, especially those far away.</p>
+                <div class="role-bonus">
+                    <span class="bonus-tag">✨ Community Bonus</span>
+                    <span class="bonus-text">+3 points for contacting distant relatives</span>
+                </div>
+                <div class="role-special">
+                    <strong>Special Ability:</strong> "Community Chain" - Reaching out to relatives creates combo bonuses for the whole family
+                </div>
+            </div>
+        </div>
+        
+        <!-- Healer -->
+        <div class="role-item">
+            <div class="role-icon">💚</div>
+            <div class="role-info">
+                <h4>The Healer</h4>
+                <p class="role-desc">Brings peace and forgiveness. Mends relationships and soothes hearts with patience and duas.</p>
+                <div class="role-bonus">
+                    <span class="bonus-tag">✨ Patience Bonus</span>
+                    <span class="bonus-text">+2 points for resolving conflicts or forgiving someone</span>
+                </div>
+                <div class="role-special">
+                    <strong>Special Ability:</strong> "Patience Reservoir" - Can absorb family stress and convert it to blessings
+                </div>
+            </div>
+        </div>
+        
+        <!-- Illuminator -->
+        <div class="role-item">
+            <div class="role-icon">🪔</div>
+            <div class="role-info">
+                <h4>The Illuminator</h4>
+                <p class="role-desc">Brings light and creativity. Makes worship beautiful and engaging for everyone.</p>
+                <div class="role-bonus">
+                    <span class="bonus-tag">✨ Creative Bonus</span>
+                    <span class="bonus-text">+2 points for creating Ramadan crafts, decorations, or nasheeds</span>
+                </div>
+                <div class="role-special">
+                    <strong>Special Ability:</strong> "Creative Worship" - Can design alternative worship methods for bonus points
+                </div>
+            </div>
+        </div>
+        
+        <div class="roles-footer">
+            <p><i class="fas fa-star"></i> Each role has unique bonuses! Choose the one that fits your personality best. <i class="fas fa-star"></i></p>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Roles Card Styles */
+.roles-card {
+    background: linear-gradient(145deg, rgba(126,159,111,0.15), rgba(180,150,80,0.15)) !important;
+    border: 2px solid #d4af37 !important;
+    margin-bottom: 20px;
+}
+
+.roles-header {
+    cursor: pointer;
+    user-select: none;
+}
+
+.roles-header h3 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0 !important;
+    border-bottom: none !important;
+}
+
+.toggle-icon {
+    font-size: 1.2rem;
+    transition: transform 0.3s;
+}
+
+.roles-content {
+    margin-top: 20px;
+}
+
+.role-item {
+    display: flex;
+    gap: 15px;
+    padding: 15px;
+    margin-bottom: 15px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    border-left: 4px solid #d4af37;
+}
+
+.role-icon {
+    font-size: 2.5rem;
+    min-width: 60px;
+    text-align: center;
+}
+
+.role-info {
+    flex: 1;
+}
+
+.role-info h4 {
+    color: #d4af37;
+    margin-bottom: 5px;
+    font-size: 1.2rem;
+}
+
+.role-desc {
+    color: #8a7c6d;
+    font-size: 0.95rem;
+    margin-bottom: 10px;
+    font-style: italic;
+}
+
+.role-bonus {
+    background: rgba(212, 175, 55, 0.1);
+    padding: 8px 12px;
+    border-radius: 30px;
+    margin-bottom: 8px;
+    display: inline-block;
+}
+
+.bonus-tag {
+    background: #d4af37;
+    color: white;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.bonus-text {
+    color: #5f7a4a;
+    font-weight: 500;
+}
+
+.role-special {
+    font-size: 0.9rem;
+    color: #7d9a6c;
+    padding: 8px;
+    background: rgba(125, 154, 108, 0.1);
+    border-radius: 10px;
+}
+
+.roles-footer {
+    text-align: center;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px dashed #d4af37;
+    color: #8a7c6d;
+}
+
+/* Dark Mode Styles */
+body.dark-mode .role-desc {
+    color: #e6c87c;
+}
+
+body.dark-mode .bonus-text {
+    color: #ffecb3;
+}
+
+body.dark-mode .role-special {
+    background: rgba(30, 58, 90, 0.6);
+    color: #f5d742;
+}
+
+body.dark-mode .roles-footer {
+    color: #e6c87c;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .role-item {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .role-icon {
+        font-size: 2rem;
+    }
+}
+</style>
+
+<script>
+function toggleRoles() {
+    const content = document.getElementById('rolesContent');
+    const icon = document.querySelector('.toggle-icon');
+    
+    if (content.style.display === 'none') {
+        content.style.display = 'block';
+        icon.innerHTML = '▲';
+    } else {
+        content.style.display = 'none';
+        icon.innerHTML = '▼';
+    }
+}
+</script>
             <!-- CARD 2: DAILY DEVOTION -->
             <div class="card">
                 <h3><i class="fas fa-tasks"></i> 2. Daily Devotion</h3>
