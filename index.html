@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes, viewport-fit=cover">
+    <title>✨ Ramadan Legacy Quest - Enchanted Family Edition ✨</title>
+    
+    <!-- Font Awesome 6 (Icons) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- CSS Stylesheet -->
+    <link rel="stylesheet" href="stylesheet.css">
+</head>
+
+
+<body class="light-mode">
+    <!-- FIXED RAMADAN DECORATIONS -->
+    <div class="mosque-decoration"></div>
+    <div class="lanterns">
+        <span class="lantern"><i class="fas fa-lantern"></i></span>
+        <span class="lantern"><i class="fas fa-lantern"></i></span>
+        <span class="lantern"><i class="fas fa-lantern"></i></span>
+    </div>
+    <div class="stars-fixed">
+        <span class="star" style="top: 10%; left: 5%;"><i class="fas fa-star"></i></span>
+        <span class="star" style="top: 15%; right: 10%;"><i class="fas fa-star"></i></span>
+        <span class="star" style="bottom: 20%; left: 15%;"><i class="fas fa-star"></i></span>
+        <span class="star" style="bottom: 10%; right: 20%;"><i class="fas fa-star"></i></span>
+        <span class="star" style="top: 25%; left: 25%;"><i class="fas fa-star"></i></span>
+        <span class="star" style="top: 70%; right: 15%;"><i class="fas fa-star"></i></span>
+        <span class="star" style="bottom: 30%; right: 30%;"><i class="fas fa-star"></i></span>
+    </div>
+    <div class="moon-fixed">
+        <i class="fas fa-moon"></i>
+    </div>
+
+    <!-- THEME TOGGLE BUTTON -->
+    <div class="theme-toggle" id="themeToggle">
+        <i class="fas fa-moon"></i>
+    </div>
+
+    <!-- CELEBRATION MODAL -->
+    <div class="modal-overlay" id="modalOverlay"></div>
+    <div class="celebration-modal" id="celebrationModal">
+        <i class="fas fa-star" style="font-size: 3rem; color: #d4af37; margin-bottom: 10px;"></i>
+        <i class="fas fa-moon" style="font-size: 2.5rem; color: #9ab87a; margin-bottom: 10px;"></i>
+        <h2 id="modalTitle" style="margin-bottom: 15px;">✨ Mabrook! ✨</h2>
+        <p id="modalMessage" style="font-size: 1.3rem; margin-bottom: 25px;"></p>
+        <button onclick="closeModal()" style="padding: 15px 35px;"><i class="fas fa-heart"></i> Continue</button>
+    </div>
+
+    <!-- MAIN GAME CONTAINER -->
+    <div class="container">
+        <header style="text-align: center;">
+            <h1><i class="fas fa-mosque"></i> Ramadan Legacy Quest <i class="fas fa-moon"></i></h1>
+            <p class="subtitle"><i class="fas fa-sparkle"></i> 30 Days of Blessings & Family Fun <i class="fas fa-sparkle"></i></p>
+
+            <!-- FAMILY CODE SECTION -->
+            <div class="family-code-section">
+                <i class="fas fa-users" style="font-size: 2.2rem; color: #b38f40;"></i>
+                <div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: center;">
+                    <input type="text" id="familyCodeInput" class="family-code-input" placeholder="Enter family code" maxlength="10">
+                    <button id="joinFamilyBtn"><i class="fas fa-door-open"></i> Join Family</button>
+                    <button id="createFamilyBtn" style="background: #b38f40; color: white;"><i class="fas fa-plus-circle"></i> Create</button>
+                </div>
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <span style="font-weight: bold;">🏠 Current Family:</span>
+                    <span id="familyCodeDisplay" class="code-display">🔴 NOT JOINED</span>
+                </div>
+            </div>
+
+            <!-- MOON TRACKER -->
+            <div class="moon-tracker" id="moonTracker"></div>
+
+            <!-- POINTS DISPLAY -->
+            <div class="points-display">
+                <h2 id="currentDay" style="font-size: 1.8rem;">Day 1 of Ramadan</h2>
+                <p style="font-size: 1.6rem; margin-top: 10px;"><i class="fas fa-coins"></i> Family Fortune: <span id="totalPoints" style="font-weight: 900;">0</span> points</p>
+            </div>
+        </header>
+
+        <!-- GAME GRID - 3 CARDS -->
+        <div class="game-grid">
+            <!-- CARD 1: CHARACTER -->
+            <div class="card">
+                <h3><i class="fas fa-user-crescent"></i> 1. Choose Character</h3>
+                <select id="characterSelect">
+                    <option value="">-- Select Your Role --</option>
+                    <option value="guardian">🛡️ The Guardian (Family Bonus)</option>
+                    <option value="seeker">📖 The Seeker (Quran Bonus)</option>
+                    <option value="nourisher">🍽️ The Nourisher (Iftar Bonus)</option>
+                    <option value="connector">🤝 The Connector (Community)</option>
+                    <option value="healer">💚 The Healer (Patience)</option>
+                    <option value="illuminator">🪔 The Illuminator (Creative)</option>
+                </select>
+                <input type="text" id="playerName" placeholder="Your name">
+                <button id="joinGameBtn"><i class="fas fa-user-plus"></i> Join Quest</button>
+                <div class="player-list" id="playerList">
+                    <div class="player">
+                        <div><strong>✨ Awaiting Heroes ✨</strong><br><small>Join to begin</small></div>
+                        <div class="player-points">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CARD 2: DAILY DEVOTION -->
+            <div class="card">
+                <h3><i class="fas fa-tasks"></i> 2. Daily Devotion</h3>
+                
+                <label><i class="fas fa-utensils"></i> Fast Completed?</label>
+                <select id="fastSelect">
+                    <option value="0">No</option>
+                    <option value="1">Yes! (+1)</option>
+                </select>
+
+                <label><i class="fas fa-book-open"></i> Quran Time</label>
+                <select id="quranSelect">
+                    <option value="0">0-9 min</option>
+                    <option value="1">10-19 min (+1)</option>
+                    <option value="2">20-29 min (+2)</option>
+                    <option value="3">30+ min (+3)</option>
+                </select>
+
+                <label><i class="fas fa-mosque"></i> Daily Prayers</label>
+                <select id="prayerSelect">
+                    <option value="0">0</option>
+                    <option value="1">1 (+1)</option>
+                    <option value="2">2 (+2)</option>
+                    <option value="3">3 (+3)</option>
+                    <option value="4">4 (+4)</option>
+                    <option value="5">5 (+5)</option>
+                </select>
+
+                <label><i class="fas fa-shield"></i> Character Mission</label>
+                <select id="missionSelect">
+                    <option value="0">Not completed</option>
+                    <option value="2">Completed! (+2)</option>
+                </select>
+
+                <div style="display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap;">
+                    <button id="submitDailyBtn"><i class="fas fa-paper-plane"></i> Submit</button>
+                    <button id="spotDeedBtn"><i class="fas fa-eye"></i> Spot Secret</button>
+                </div>
+            </div>
+
+            <!-- CARD 3: DUA DICE + QUESTS -->
+            <div class="card">
+                <h3><i class="fas fa-dice"></i> 3. Dua Dice</h3>
+                <button id="rollDiceBtn" style="font-size: 1.8rem; padding: 20px; width: 100%;">
+                    <i class="fas fa-dice-d20"></i> ROLL
+                </button>
+                <div class="dice-result" id="diceResult">
+                    ✨ Click ROLL for a family prompt ✨
+                </div>
+                
+                <h3 style="margin-top: 20px;"><i class="fas fa-flag"></i> 4. Weekly Quest</h3>
+                <p id="currentQuest" style="padding: 16px; border-radius: 20px; background: rgba(125,154,108,0.2);">
+                    🌟 Week 1: 5 Ramadan traditions
+                </p>
+                <button id="completeQuestBtn"><i class="fas fa-check-circle"></i> Complete Quest</button>
+            </div>
+        </div>
+
+        <!-- FAMILY GOAL CARD - 1100 POINTS -->
+<div class="card" style="margin-top: 20px; background: linear-gradient(145deg, rgba(126,159,111,0.1), rgba(180,150,80,0.1));">
+    <h3 style="display: flex; align-items: center; gap: 15px;">
+        <i class="fas fa-trophy" style="color: #d4af37; font-size: 2rem;"></i> 
+        FAMILY GOAL: 1100 POINTS!
+    </h3>
+    
+    <div style="display: flex; flex-wrap: wrap; gap: 30px; align-items: center;">
+        <!-- Left side: Progress bar -->
+        <div style="flex: 2; min-width: 250px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                <span style="font-weight: bold; font-size: 1.2rem;">🎯 Progress:</span>
+                <span id="goalProgress" style="font-weight: bold; color: #d4af37; font-size: 1.3rem;">0 / 1100</span>
+            </div>
+            
+            <!-- Progress Bar -->
+            <div style="width: 100%; height: 30px; background: rgba(200,180,140,0.3); border-radius: 20px; overflow: hidden; border: 2px solid #b39b6b;">
+                <div id="goalProgressFill" style="width: 0%; height: 100%; background: linear-gradient(90deg, #9ab87a, #7d9a6c); border-radius: 20px; transition: width 0.5s ease;"></div>
+            </div>
+            
+            <div style="display: flex; justify-content: space-between; margin-top: 10px;">
+                <span id="goalPercentage">0%</span>
+                <span style="font-weight: bold;">✨ 1100 ✨</span>
+            </div>
+            
+            <!-- Goal Achieved Celebration -->
+            <div id="goalCelebration" style="display: none; margin-top: 20px; padding: 15px; background: rgba(212,175,55,0.2); border-radius: 50px; text-align: center; border: 2px solid #d4af37;">
+                <i class="fas fa-star" style="color: #d4af37;"></i>
+                <i class="fas fa-star" style="color: #d4af37;"></i>
+                <i class="fas fa-star" style="color: #d4af37;"></i>
+                <span style="font-weight: bold; color: #d4af37; margin: 0 10px;">GOAL ACHIEVED! TIME TO CELEBRATE!</span>
+                <i class="fas fa-star" style="color: #d4af37;"></i>
+                <i class="fas fa-star" style="color: #d4af37;"></i>
+                <i class="fas fa-star" style="color: #d4af37;"></i>
+            </div>
+        </div>
+        
+        <!-- Right side: Treats system -->
+        <div style="flex: 1; min-width: 250px; border-left: 2px dashed #b39b6b; padding-left: 25px;">
+            <h4 style="display: flex; align-items: center; gap: 10px;">
+                <i class="fas fa-gift" style="color: #d4af37;"></i> 
+                Family Treats <span id="treatCount" style="background: #d4af37; color: white; padding: 2px 10px; border-radius: 20px; font-size: 0.9rem;">0</span>
+            </h4>
+            
+            <!-- Add Treat -->
+            <div style="display: flex; gap: 10px; margin: 15px 0;">
+                <input type="text" id="treatInput" placeholder="Add a treat (e.g. Pizza party!)" style="flex: 1; padding: 12px; border-radius: 50px;">
+                <button id="addTreatBtn" style="background: #d4af37; color: white; padding: 12px 20px;">
+                    <i class="fas fa-plus"></i> Add
+                </button>
+            </div>
+            
+            <!-- Treat List -->
+            <div id="treatList" style="max-height: 150px; overflow-y: auto; margin: 15px 0; padding: 10px; background: rgba(0,0,0,0.05); border-radius: 20px;">
+                <div style="padding: 15px; text-align: center; color: #8a7c6d;">✨ No treats added yet. Add your family's favorite treats! ✨</div>
+            </div>
+            
+            <!-- Claim Reward Button -->
+            <button id="claimRewardBtn" style="width: 100%; background: linear-gradient(145deg, #d4af37, #b38f40); color: white; font-size: 1.2rem; padding: 15px;">
+                <i class="fas fa-gift"></i> CLAIM A TREAT!
+            </button>
+            <p style="font-size: 0.8rem; margin-top: 10px; text-align: center; opacity: 0.8;">
+                <i class="fas fa-info-circle"></i> Reach 1100 points to unlock treats!
+            </p>
+        </div>
+    </div>
+</div>
+
+
+<!-- DAILY CHECK-IN & REFLECTION SECTION - NO POINTS -->
+<div class="card" style="margin-top: 20px; background: linear-gradient(145deg, rgba(159, 188, 118, 0.1), rgba(212, 175, 55, 0.1));">
+    <h3 style="display: flex; align-items: center; gap: 15px;">
+        <i class="fas fa-calendar-check" style="color: #7d9a6c; font-size: 1.8rem;"></i> 
+        ☀️🌙 Daily Ramadan Check-In (No Points)
+    </h3>
+    
+    <p style="margin-bottom: 20px; font-style: italic; color: #8a7c6d;">
+        <i class="fas fa-heart"></i> Check in twice daily to stay connected with your family, wherever you are!
+    </p>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px;">
+        
+        <!-- MORNING CHECK-IN -->
+        <div style="background: rgba(255, 215, 0, 0.05); border-radius: 30px; padding: 20px; border: 1px dashed #d4af37;">
+            <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
+                <div style="background: #f5d742; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-sun" style="color: white; font-size: 1.8rem;"></i>
+                </div>
+                <div>
+                    <h4 style="margin: 0; color: #d4af37;">Morning Check-In</h4>
+                    <p style="margin: 5px 0 0; font-size: 0.9rem;">Fajr - Start of Fast</p>
+                </div>
+            </div>
+            
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
+                <span style="font-weight: bold;">Today's Check-Ins:</span>
+                <span id="morningCheckInCount" style="background: #d4af37; color: white; padding: 5px 15px; border-radius: 30px; font-weight: bold;">0 / 0</span>
+            </div>
+            
+            <div id="morningCheckInList" style="min-height: 60px; margin-bottom: 15px;">
+                <div style="padding: 10px; text-align: center; color: #8a7c6d;">🌙 No morning check-ins yet</div>
+            </div>
+            
+            <button id="morningCheckInBtn" style="width: 100%; background: linear-gradient(145deg, #f5d742, #d4af37); color: white; padding: 14px;">
+                <i class="fas fa-sun"></i> I'm Fasting Today ☀️
+            </button>
+            <p style="font-size: 0.8rem; margin-top: 10px; text-align: center; opacity: 0.8;">
+                <i class="fas fa-info-circle"></i> Let family know you started your fast
+            </p>
+        </div>
+        
+        <!-- EVENING CHECK-IN -->
+        <div style="background: rgba(30, 58, 90, 0.05); border-radius: 30px; padding: 20px; border: 1px dashed #1e3a5a;">
+            <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
+                <div style="background: #1e3a5a; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-moon" style="color: #f5d742; font-size: 1.8rem;"></i>
+                </div>
+                <div>
+                    <h4 style="margin: 0; color: #1e3a5a;">Evening Check-In</h4>
+                    <p style="margin: 5px 0 0; font-size: 0.9rem;">Maghrib - Iftar Time</p>
+                </div>
+            </div>
+            
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
+                <span style="font-weight: bold;">Today's Check-Ins:</span>
+                <span id="eveningCheckInCount" style="background: #1e3a5a; color: #f5d742; padding: 5px 15px; border-radius: 30px; font-weight: bold;">0 / 0</span>
+            </div>
+            
+            <div id="eveningCheckInList" style="min-height: 60px; margin-bottom: 15px;">
+                <div style="padding: 10px; text-align: center; color: #8a7c6d;">🌙 No evening check-ins yet</div>
+            </div>
+            
+            <button id="eveningCheckInBtn" style="width: 100%; background: linear-gradient(145deg, #1e3a5a, #0e2a44); color: #f5d742; padding: 14px;">
+                <i class="fas fa-moon"></i> Fast Completed 🌙
+            </button>
+            <p style="font-size: 0.8rem; margin-top: 10px; text-align: center; opacity: 0.8;">
+                <i class="fas fa-info-circle"></i> Let family know your fast was accepted
+            </p>
+        </div>
+        
+        <!-- REFLECTION SECTION -->
+        <div style="grid-column: span 1; background: rgba(126, 159, 111, 0.1); border-radius: 30px; padding: 20px; border: 1px dashed #7d9a6c;">
+            <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
+                <div style="background: #7d9a6c; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-pen-fancy" style="color: white; font-size: 1.5rem;"></i>
+                </div>
+                <div>
+                    <h4 style="margin: 0; color: #7d9a6c;">Family Reflections</h4>
+                    <p style="margin: 5px 0 0; font-size: 0.9rem;">Share your Ramadan thoughts</p>
+                </div>
+            </div>
+            
+            <textarea id="reflectionInput" rows="3" placeholder="What did you learn today? What touched your heart? What dua are you making?" style="width: 100%; padding: 15px; border-radius: 20px; border: 2px solid #d4c9b8; background: white; font-family: inherit; margin-bottom: 15px;"></textarea>
+            
+            <button id="saveReflectionBtn" style="width: 100%; background: #7d9a6c; color: white; padding: 14px; margin-bottom: 20px;">
+                <i class="fas fa-save"></i> Share Reflection
+            </button>
+            
+            <div style="border-top: 1px dashed #d4c9b8; padding-top: 15px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <span style="font-weight: bold;">📝 Recent Reflections</span>
+                    <span style="color: #7d9a6c; font-size: 0.9rem;">Last 10</span>
+                </div>
+                <div id="reflectionsList" style="max-height: 300px; overflow-y: auto; padding-right: 5px;">
+                    <div style="padding: 20px; text-align: center; color: #8a7c6d;">💭 No reflections yet. Share your Ramadan thoughts!</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- DARK MODE ADJUSTMENTS FOR CHECK-INS (Add to style.css) -->
+<style>
+    body.dark-mode #eveningCheckInBtn {
+        background: linear-gradient(145deg, #2a4a6a, #1a3a54);
+        color: #ffd700;
+        border: 1px solid #ffd700;
+    }
+    
+    body.dark-mode #morningCheckInBtn {
+        background: linear-gradient(145deg, #d4af37, #b38f40);
+        color: white;
+    }
+    
+    body.dark-mode textarea#reflectionInput {
+        background: #1e3a5a;
+        border-color: #b38f40;
+        color: #f5e7d3;
+    }
+    
+    body.dark-mode textarea#reflectionInput::placeholder {
+        color: #a8b8c8;
+    }
+</style>
+
+        <!-- FAMILY LOG CARD -->
+        <div class="card" style="margin-top: 20px;">
+            <h3><i class="fas fa-scroll"></i> Family Fortune Log</h3>
+            <div class="log" id="familyLog">
+                <div class="log-entry"><i class="fas fa-star" style="color: #d4af37;"></i> Welcome to Ramadan Legacy Quest!</div>
+                <div class="log-entry"><i class="fas fa-info-circle"></i> Create or join a family to begin.</div>
+            </div>
+            <div style="display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-top: 25px;">
+                <button id="shareGameBtn"><i class="fas fa-share-alt"></i> Share</button>
+                <button id="resetDayBtn"><i class="fas fa-sun"></i> New Day</button>
+                <button id="exportDataBtn"><i class="fas fa-download"></i> Save</button>
+                <button id="helpBtn"><i class="fas fa-question-circle"></i> Guide</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript File -->
+    <script src="script.js"></script>
+</body>
+</html>
