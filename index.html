@@ -2,112 +2,91 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes, viewport-fit=cover">
-    <title>✨ Ramadan Legacy Quest - Enchanted Family Edition ✨</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <title>✨ Ramadan Legacy Quest ✨</title>
     
-    <!-- Font Awesome 6 (Icons) -->
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
-    <!-- CSS Stylesheet -->
+    <!-- CSS -->
     <link rel="stylesheet" href="style.css">
 </head>
-
 <body class="light-mode">
-    <!-- FIXED RAMADAN DECORATIONS -->
-    <div class="mosque-decoration"></div>
-    <div class="lanterns">
-        <span class="lantern"><i class="fas fa-lantern"></i></span>
-        <span class="lantern"><i class="fas fa-lantern"></i></span>
-        <span class="lantern"><i class="fas fa-lantern"></i></span>
-    </div>
-    <div class="stars-fixed">
-        <span class="star" style="top: 10%; left: 5%;"><i class="fas fa-star"></i></span>
-        <span class="star" style="top: 15%; right: 10%;"><i class="fas fa-star"></i></span>
-        <span class="star" style="bottom: 20%; left: 15%;"><i class="fas fa-star"></i></span>
-        <span class="star" style="bottom: 10%; right: 20%;"><i class="fas fa-star"></i></span>
-        <span class="star" style="top: 25%; left: 25%;"><i class="fas fa-star"></i></span>
-        <span class="star" style="top: 70%; right: 15%;"><i class="fas fa-star"></i></span>
-        <span class="star" style="bottom: 30%; right: 30%;"><i class="fas fa-star"></i></span>
-    </div>
-    <div class="moon-fixed">
-        <i class="fas fa-moon"></i>
-    </div>
-
-    <!-- THEME TOGGLE BUTTON -->
+    <!-- Theme Toggle -->
     <div class="theme-toggle" id="themeToggle">
         <i class="fas fa-moon"></i>
     </div>
 
-    <!-- CELEBRATION MODAL -->
+    <!-- Celebration Modal -->
     <div class="modal-overlay" id="modalOverlay"></div>
     <div class="celebration-modal" id="celebrationModal">
-        <i class="fas fa-star modal-star"></i>
-        <i class="fas fa-moon modal-moon"></i>
+        <i class="fas fa-star"></i>
+        <i class="fas fa-moon"></i>
         <h2 id="modalTitle">✨ Mabrook! ✨</h2>
         <p id="modalMessage"></p>
-        <button onclick="closeModal()"><i class="fas fa-heart"></i> Continue</button>
+        <button onclick="closeModal()">Continue</button>
     </div>
 
-    <!-- MAIN GAME CONTAINER -->
+    <!-- Main Container -->
     <div class="container">
-        <header>
-            <h1><i class="fas fa-mosque"></i> Ramadan Legacy Quest <i class="fas fa-moon"></i></h1>
-            <p class="subtitle"><i class="fas fa-sparkle"></i> 30 Days of Blessings & Family Fun <i class="fas fa-sparkle"></i></p>
+        <!-- Header -->
+        <div class="header">
+            <h1><i class="fas fa-mosque"></i> Ramadan Legacy Quest</h1>
+            <p class="subtitle">30 Days of Blessings & Family Fun</p>
+        </div>
 
-            <!-- FAMILY CODE SECTION -->
-            <div class="family-code-section">
-                <i class="fas fa-users family-icon"></i>
-                <div class="family-input-group">
-                    <input type="text" id="familyCodeInput" class="family-code-input" placeholder="Enter family code" maxlength="10">
-                    <button id="joinFamilyBtn" class="join-family-btn"><i class="fas fa-door-open"></i> Join Family</button>
-                    <button id="createFamilyBtn" class="create-family-btn"><i class="fas fa-plus-circle"></i> Create</button>
-                </div>
-                <div class="family-display-group">
-                    <span class="family-label">🏠 Current Family:</span>
-                    <span id="familyCodeDisplay" class="code-display">🔴 NOT JOINED</span>
-                </div>
+        <!-- Family Code Section -->
+        <div class="family-section">
+            <div class="family-input-group">
+                <input type="text" id="familyCodeInput" placeholder="Enter family code">
+                <button id="joinFamilyBtn">Join Family</button>
+                <button id="createFamilyBtn">Create</button>
             </div>
-
-            <!-- MOON TRACKER -->
-            <div class="moon-tracker" id="moonTracker"></div>
-
-            <!-- POINTS DISPLAY -->
-            <div class="points-display">
-                <h2 id="currentDay">Day 1 of Ramadan</h2>
-                <p class="points-text"><i class="fas fa-coins"></i> Family Fortune: <span id="totalPoints">0</span> points</p>
+            <div class="family-display">
+                <span>Current Family:</span>
+                <span id="familyCodeDisplay">NOT JOINED</span>
             </div>
-        </header>
+        </div>
 
-        <!-- GAME GRID - MAIN CARDS -->
+        <!-- Moon Tracker -->
+        <div class="moon-tracker" id="moonTracker"></div>
+
+        <!-- Points Display -->
+        <div class="points-display">
+            <h2 id="currentDay">Day 1 of Ramadan</h2>
+            <p>Family Fortune: <span id="totalPoints">0</span> points</p>
+        </div>
+
+        <!-- Game Grid -->
         <div class="game-grid">
-            <!-- CARD 1: CHARACTER SELECTION -->
+            <!-- Card 1: Choose Character -->
             <div class="card">
-                <h3><i class="fas fa-user-crescent"></i> 1. Choose Character</h3>
-                <select id="characterSelect" class="character-select">
+                <h3>1. Choose Character</h3>
+                <select id="characterSelect">
                     <option value="">-- Select Your Role --</option>
-                    <option value="guardian">🛡️ The Guardian (Family Bonus)</option>
-                    <option value="seeker">📖 The Seeker (Quran Bonus)</option>
-                    <option value="nourisher">🍽️ The Nourisher (Iftar Bonus)</option>
-                    <option value="connector">🤝 The Connector (Community)</option>
-                    <option value="healer">💚 The Healer (Patience)</option>
-                    <option value="illuminator">🪔 The Illuminator (Creative)</option>
+                    <option value="guardian">🛡️ The Guardian</option>
+                    <option value="seeker">📖 The Seeker</option>
+                    <option value="nourisher">🍽️ The Nourisher</option>
+                    <option value="connector">🤝 The Connector</option>
+                    <option value="healer">💚 The Healer</option>
+                    <option value="illuminator">🪔 The Illuminator</option>
                 </select>
-                <input type="text" id="playerName" class="player-name-input" placeholder="Your name">
-                <button id="joinGameBtn" class="join-quest-btn"><i class="fas fa-user-plus"></i> Join Quest</button>
+                <input type="text" id="playerName" placeholder="Your name">
+                <button id="joinGameBtn">Join Quest</button>
                 <div class="player-list" id="playerList"></div>
             </div>
 
-            <!-- CARD 2: DAILY DEVOTION -->
+            <!-- Card 2: Daily Devotion -->
             <div class="card">
-                <h3><i class="fas fa-tasks"></i> 2. Daily Devotion</h3>
+                <h3>2. Daily Devotion</h3>
                 
-                <label><i class="fas fa-utensils"></i> Fast Completed?</label>
+                <label>Fast Completed?</label>
                 <select id="fastSelect">
                     <option value="0">No</option>
-                    <option value="1">Yes! (+1)</option>
+                    <option value="1">Yes (+1)</option>
                 </select>
 
-                <label><i class="fas fa-book-open"></i> Quran Time</label>
+                <label>Quran Time</label>
                 <select id="quranSelect">
                     <option value="0">0-9 min</option>
                     <option value="1">10-19 min (+1)</option>
@@ -115,7 +94,7 @@
                     <option value="3">30+ min (+3)</option>
                 </select>
 
-                <label><i class="fas fa-mosque"></i> Daily Prayers</label>
+                <label>Daily Prayers</label>
                 <select id="prayerSelect">
                     <option value="0">0</option>
                     <option value="1">1 (+1)</option>
@@ -125,286 +104,198 @@
                     <option value="5">5 (+5)</option>
                 </select>
 
-                <label><i class="fas fa-shield"></i> Character Mission</label>
+                <label>Character Mission</label>
                 <select id="missionSelect">
                     <option value="0">Not completed</option>
-                    <option value="2">Completed! (+2)</option>
+                    <option value="2">Completed (+2)</option>
                 </select>
 
                 <div class="button-group">
-                    <button id="submitDailyBtn"><i class="fas fa-paper-plane"></i> Submit</button>
-                    <button id="spotDeedBtn"><i class="fas fa-eye"></i> Spot Secret</button>
+                    <button id="submitDailyBtn">Submit</button>
+                    <button id="spotDeedBtn">Spot Secret</button>
                 </div>
             </div>
 
-            <!-- CARD 3: DUA DICE + QUESTS -->
+            <!-- Card 3: Dua Dice + Quest -->
             <div class="card">
-                <h3><i class="fas fa-dice"></i> 3. Dua Dice</h3>
-                <button id="rollDiceBtn" class="dice-btn"><i class="fas fa-dice-d20"></i> ROLL</button>
+                <h3>3. Dua Dice</h3>
+                <button id="rollDiceBtn" class="dice-btn">ROLL</button>
                 <div class="dice-result" id="diceResult">
-                    ✨ Click ROLL for a family prompt ✨
+                    Click ROLL for a family prompt
                 </div>
                 
-                <h3 class="quest-heading"><i class="fas fa-flag"></i> 4. Weekly Quest</h3>
-                <p id="currentQuest" class="quest-text">
-                    🌟 Week 1: 5 Ramadan traditions
-                </p>
-                <button id="completeQuestBtn" class="quest-btn"><i class="fas fa-check-circle"></i> Complete Quest</button>
+                <h3 class="quest-title">4. Weekly Quest</h3>
+                <div class="quest-box" id="currentQuest">
+                    Week 1: 5 Ramadan traditions
+                </div>
+                <button id="completeQuestBtn">Complete Quest</button>
             </div>
         </div>
 
-        <!-- CHARACTER ROLES GUIDE CARD (EXPANDED) -->
+        <!-- Character Roles Guide -->
         <div class="card roles-card">
             <div class="roles-header" onclick="toggleRoles()">
-                <h3><i class="fas fa-users-cog"></i> Character Roles Guide <span class="toggle-icon">▼</span></h3>
+                <h3>Character Roles Guide <span class="toggle-icon">▼</span></h3>
             </div>
             <div id="rolesContent" class="roles-content" style="display: block;">
                 <!-- Guardian -->
                 <div class="role-item">
                     <div class="role-icon">🛡️</div>
-                    <div class="role-info">
+                    <div class="role-details">
                         <h4>The Guardian</h4>
-                        <p class="role-desc">The protector and anchor of the family. Excels at keeping everyone connected and spiritually grounded.</p>
-                        <div class="role-bonus">
-                            <span class="bonus-tag">✨ Family Bonus</span>
-                            <span class="bonus-text">+2 points when 3+ family members check in</span>
-                        </div>
-                        <div class="role-special">
-                            <strong>Special Ability:</strong> "Legacy Blessing" - Your consistent worship grants bonus points to all players on weekends
-                        </div>
+                        <p>The protector and anchor of the family. Excels at keeping everyone connected and spiritually grounded.</p>
+                        <div class="role-bonus">✨ Family Bonus: +2 points when 3+ family members check in</div>
+                        <div class="role-special">Special Ability: "Legacy Blessing" - Grants bonus points to all players on weekends</div>
                     </div>
                 </div>
-                
+
                 <!-- Seeker -->
                 <div class="role-item">
                     <div class="role-icon">📖</div>
-                    <div class="role-info">
+                    <div class="role-details">
                         <h4>The Seeker</h4>
-                        <p class="role-desc">Passionate about learning and teaching. Always seeking deeper understanding of the Qur'an and Islam.</p>
-                        <div class="role-bonus">
-                            <span class="bonus-tag">✨ Qur'an Bonus</span>
-                            <span class="bonus-text">Double points for Qur'an reading (30+ min = 6 points!)</span>
-                        </div>
-                        <div class="role-special">
-                            <strong>Special Ability:</strong> "Tadabbur Vision" - Can earn double points for Qur'an reflection and sharing insights
-                        </div>
+                        <p>Passionate about learning and teaching. Always seeking deeper understanding of the Qur'an and Islam.</p>
+                        <div class="role-bonus">✨ Qur'an Bonus: Double points for Qur'an reading</div>
+                        <div class="role-special">Special Ability: "Tadabbur Vision" - Double points for reflection</div>
                     </div>
                 </div>
-                
+
                 <!-- Nourisher -->
                 <div class="role-item">
                     <div class="role-icon">🍽️</div>
-                    <div class="role-info">
+                    <div class="role-details">
                         <h4>The Nourisher</h4>
-                        <p class="role-desc">Feeds body and soul. Brings the family together through food, hospitality, and generosity.</p>
-                        <div class="role-bonus">
-                            <span class="bonus-tag">✨ Iftar Bonus</span>
-                            <span class="bonus-text">+1 point per guest when hosting iftar (max +5)</span>
-                        </div>
-                        <div class="role-special">
-                            <strong>Special Ability:</strong> "Iftar Multiplication" - Hosting iftar earns points × number of guests
-                        </div>
+                        <p>Feeds body and soul. Brings the family together through food, hospitality, and generosity.</p>
+                        <div class="role-bonus">✨ Iftar Bonus: +1 point per guest when hosting iftar</div>
+                        <div class="role-special">Special Ability: "Iftar Multiplication" - Points × number of guests</div>
                     </div>
                 </div>
-                
+
                 <!-- Connector -->
                 <div class="role-item">
                     <div class="role-icon">🤝</div>
-                    <div class="role-info">
+                    <div class="role-details">
                         <h4>The Connector</h4>
-                        <p class="role-desc">Builds bridges between family members. Keeps everyone in touch, especially those far away.</p>
-                        <div class="role-bonus">
-                            <span class="bonus-tag">✨ Community Bonus</span>
-                            <span class="bonus-text">+3 points for contacting distant relatives</span>
-                        </div>
-                        <div class="role-special">
-                            <strong>Special Ability:</strong> "Community Chain" - Reaching out to relatives creates combo bonuses for the whole family
-                        </div>
+                        <p>Builds bridges between family members. Keeps everyone in touch, especially those far away.</p>
+                        <div class="role-bonus">✨ Community Bonus: +3 points for contacting distant relatives</div>
+                        <div class="role-special">Special Ability: "Community Chain" - Creates combo bonuses</div>
                     </div>
                 </div>
-                
+
                 <!-- Healer -->
                 <div class="role-item">
                     <div class="role-icon">💚</div>
-                    <div class="role-info">
+                    <div class="role-details">
                         <h4>The Healer</h4>
-                        <p class="role-desc">Brings peace and forgiveness. Mends relationships and soothes hearts with patience and duas.</p>
-                        <div class="role-bonus">
-                            <span class="bonus-tag">✨ Patience Bonus</span>
-                            <span class="bonus-text">+2 points for resolving conflicts or forgiving someone</span>
-                        </div>
-                        <div class="role-special">
-                            <strong>Special Ability:</strong> "Patience Reservoir" - Can absorb family stress and convert it to blessings
-                        </div>
+                        <p>Brings peace and forgiveness. Mends relationships and soothes hearts with patience and duas.</p>
+                        <div class="role-bonus">✨ Patience Bonus: +2 points for resolving conflicts</div>
+                        <div class="role-special">Special Ability: "Patience Reservoir" - Converts stress to blessings</div>
                     </div>
                 </div>
-                
+
                 <!-- Illuminator -->
                 <div class="role-item">
                     <div class="role-icon">🪔</div>
-                    <div class="role-info">
+                    <div class="role-details">
                         <h4>The Illuminator</h4>
-                        <p class="role-desc">Brings light and creativity. Makes worship beautiful and engaging for everyone.</p>
-                        <div class="role-bonus">
-                            <span class="bonus-tag">✨ Creative Bonus</span>
-                            <span class="bonus-text">+2 points for creating Ramadan crafts, decorations, or nasheeds</span>
-                        </div>
-                        <div class="role-special">
-                            <strong>Special Ability:</strong> "Creative Worship" - Can design alternative worship methods for bonus points
-                        </div>
+                        <p>Brings light and creativity. Makes worship beautiful and engaging for everyone.</p>
+                        <div class="role-bonus">✨ Creative Bonus: +2 points for Ramadan crafts</div>
+                        <div class="role-special">Special Ability: "Creative Worship" - Alternative worship methods</div>
                     </div>
-                </div>
-                
-                <div class="roles-footer">
-                    <p><i class="fas fa-star"></i> Each role has unique bonuses! Choose the one that fits your personality best. <i class="fas fa-star"></i></p>
                 </div>
             </div>
         </div>
 
-        <!-- FAMILY GOAL CARD - 1100 POINTS -->
+        <!-- 1100 Point Goal Card -->
         <div class="card goal-card">
-            <h3 class="goal-title"><i class="fas fa-trophy trophy-icon"></i> FAMILY GOAL: 1100 POINTS!</h3>
+            <h3>FAMILY GOAL: 1100 POINTS!</h3>
             
-            <div class="goal-container">
-                <div class="progress-container">
-                    <div class="progress-header">
-                        <span class="progress-label">🎯 Progress:</span>
-                        <span id="goalProgress" class="progress-value">0 / 1100</span>
-                    </div>
-                    
-                    <div class="progress-bar-container">
-                        <div id="goalProgressFill" class="progress-bar-fill" style="width: 0%;"></div>
-                    </div>
-                    
-                    <div class="progress-footer">
-                        <span id="goalPercentage" class="percentage">0%</span>
-                        <span class="goal-target">✨ 1100 ✨</span>
-                    </div>
-                    
-                    <div id="goalCelebration" class="goal-celebration">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <span>GOAL ACHIEVED! TIME TO CELEBRATE!</span>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                    </div>
+            <div class="progress-section">
+                <div class="progress-header">
+                    <span>Progress:</span>
+                    <span id="goalProgress">0 / 1100</span>
                 </div>
-                
-                <div class="treats-container">
-                    <h4 class="treats-title"><i class="fas fa-gift"></i> Family Treats <span id="treatCount" class="treat-count">0</span></h4>
-                    
-                    <div class="add-treat-container">
-                        <input type="text" id="treatInput" class="treat-input" placeholder="Add a treat (e.g. Pizza party!)">
-                        <button id="addTreatBtn" class="add-treat-btn"><i class="fas fa-plus"></i> Add</button>
-                    </div>
-                    
-                    <div id="treatList" class="treat-list"></div>
-                    
-                    <button id="claimRewardBtn" class="claim-btn"><i class="fas fa-gift"></i> CLAIM A TREAT!</button>
-                    <p class="treat-note"><i class="fas fa-info-circle"></i> Reach 1100 points to unlock treats!</p>
+                <div class="progress-bar">
+                    <div id="goalProgressFill" style="width: 0%;"></div>
                 </div>
+                <div class="progress-percent">
+                    <span id="goalPercentage">0%</span>
+                    <span>✨ 1100 ✨</span>
+                </div>
+                <div id="goalCelebration" class="goal-celebration">
+                    🎉 GOAL ACHIEVED! TIME TO CELEBRATE! 🎉
+                </div>
+            </div>
+
+            <div class="treats-section">
+                <h4>Family Treats <span id="treatCount">0</span></h4>
+                <div class="add-treat">
+                    <input type="text" id="treatInput" placeholder="Add a treat (e.g. Pizza party!)">
+                    <button id="addTreatBtn">Add</button>
+                </div>
+                <div id="treatList" class="treat-list"></div>
+                <button id="claimRewardBtn" class="claim-btn">CLAIM A TREAT!</button>
+                <p class="note">Reach 1100 points to unlock treats!</p>
             </div>
         </div>
 
-        <!-- DAILY CHECK-IN & REFLECTION SECTION -->
+        <!-- Daily Check-In Section -->
         <div class="card checkin-card">
-            <h3 class="checkin-title"><i class="fas fa-calendar-check checkin-icon"></i> ☀️🌙 Daily Ramadan Check-In (No Points)</h3>
-            
-            <p class="checkin-intro">
-                <i class="fas fa-heart"></i> Check in twice daily to stay connected with your family, wherever you are!
-            </p>
-            
+            <h3>☀️🌙 Daily Ramadan Check-In (No Points)</h3>
+            <p class="checkin-intro">Check in twice daily to stay connected with your family!</p>
+
             <div class="checkin-grid">
-                
-                <!-- MORNING CHECK-IN -->
+                <!-- Morning Check-In -->
                 <div class="checkin-morning">
-                    <div class="checkin-header">
-                        <div class="checkin-icon morning-icon">
-                            <i class="fas fa-sun"></i>
-                        </div>
-                        <div class="checkin-header-text">
-                            <h4>Morning Check-In</h4>
-                            <p>Fajr - Start of Fast</p>
-                        </div>
-                    </div>
-                    
+                    <h4>Morning Check-In</h4>
+                    <p>Fajr - Start of Fast</p>
                     <div class="checkin-stats">
-                        <span>Today's Check-Ins:</span>
-                        <span id="morningCheckInCount" class="checkin-count">0 / 0</span>
+                        <span>Today:</span>
+                        <span id="morningCheckInCount">0 / 0</span>
                     </div>
-                    
                     <div id="morningCheckInList" class="checkin-list"></div>
-                    
-                    <button id="morningCheckInBtn" class="morning-btn"><i class="fas fa-sun"></i> I'm Fasting Today ☀️</button>
-                    <p class="checkin-note"><i class="fas fa-info-circle"></i> Let family know you started your fast</p>
+                    <button id="morningCheckInBtn">I'm Fasting Today ☀️</button>
                 </div>
-                
-                <!-- EVENING CHECK-IN -->
+
+                <!-- Evening Check-In -->
                 <div class="checkin-evening">
-                    <div class="checkin-header">
-                        <div class="checkin-icon evening-icon">
-                            <i class="fas fa-moon"></i>
-                        </div>
-                        <div class="checkin-header-text">
-                            <h4>Evening Check-In</h4>
-                            <p>Maghrib - Iftar Time</p>
-                        </div>
-                    </div>
-                    
+                    <h4>Evening Check-In</h4>
+                    <p>Maghrib - Iftar Time</p>
                     <div class="checkin-stats">
-                        <span>Today's Check-Ins:</span>
-                        <span id="eveningCheckInCount" class="checkin-count">0 / 0</span>
+                        <span>Today:</span>
+                        <span id="eveningCheckInCount">0 / 0</span>
                     </div>
-                    
                     <div id="eveningCheckInList" class="checkin-list"></div>
-                    
-                    <button id="eveningCheckInBtn" class="evening-btn"><i class="fas fa-moon"></i> Fast Completed 🌙</button>
-                    <p class="checkin-note"><i class="fas fa-info-circle"></i> Let family know your fast was accepted</p>
+                    <button id="eveningCheckInBtn">Fast Completed 🌙</button>
                 </div>
-                
-                <!-- REFLECTION SECTION -->
-                <div class="reflection-section">
-                    <div class="checkin-header">
-                        <div class="checkin-icon reflection-icon">
-                            <i class="fas fa-pen-fancy"></i>
-                        </div>
-                        <div class="checkin-header-text">
-                            <h4>Family Reflections</h4>
-                            <p>Share your Ramadan thoughts</p>
-                        </div>
-                    </div>
-                    
-                    <textarea id="reflectionInput" class="reflection-input" rows="3" placeholder="What did you learn today? What touched your heart? What dua are you making?"></textarea>
-                    
-                    <button id="saveReflectionBtn" class="reflection-btn"><i class="fas fa-save"></i> Share Reflection</button>
-                    
+
+                <!-- Reflections -->
+                <div class="reflection-box">
+                    <h4>Family Reflections</h4>
+                    <textarea id="reflectionInput" rows="3" placeholder="Share your Ramadan thoughts..."></textarea>
+                    <button id="saveReflectionBtn">Share Reflection</button>
                     <div class="recent-reflections">
-                        <div class="reflections-header">
-                            <span>📝 Recent Reflections</span>
-                            <span class="reflections-limit">Last 10</span>
-                        </div>
+                        <p>Recent Reflections</p>
                         <div id="reflectionsList" class="reflections-list"></div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- FAMILY LOG CARD -->
-        <div class="card log-card">
-            <h3><i class="fas fa-scroll"></i> Family Fortune Log</h3>
+        <!-- Family Log -->
+        <div class="card">
+            <h3>Family Fortune Log</h3>
             <div class="log" id="familyLog"></div>
             <div class="action-buttons">
-                <button id="shareGameBtn"><i class="fas fa-share-alt"></i> Share</button>
-                <button id="resetDayBtn"><i class="fas fa-sun"></i> New Day</button>
-                <button id="exportDataBtn"><i class="fas fa-download"></i> Save</button>
-                <button id="helpBtn"><i class="fas fa-question-circle"></i> Guide</button>
+                <button id="shareGameBtn">Share</button>
+                <button id="resetDayBtn">New Day</button>
+                <button id="exportDataBtn">Save</button>
+                <button id="helpBtn">Guide</button>
             </div>
         </div>
     </div>
 
-    <!-- JavaScript File -->
+    <!-- JavaScript -->
     <script src="script.js"></script>
 </body>
 </html>
