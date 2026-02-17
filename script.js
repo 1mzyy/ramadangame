@@ -1,11 +1,11 @@
 // ============================================
-// RAMADAN LEGACY QUEST - SCRIPT.JS
-// Family Game for Ramadan - All Devices
+// RAMADAN LEGACY QUEST - SIMPLIFIED SINGLE-FAMILY VERSION
 // WITH 1100 POINT GOAL, REMOTE DUA DICE & DAILY CHECK-INS
+// NO LOGIN REQUIRED
 // ============================================
 
 // ---------- GAME STATE ----------
-let game_State = {
+let gameState = {
     familyCode: null,
     players: [],
     currentDay: 1,
@@ -21,14 +21,13 @@ let game_State = {
     treats: [],
     dailyContribution: {},
     
-    // NEW: Daily Check-Ins (No Points)
+    // Daily Check-Ins (No Points)
     morningCheckIns: {}, // Track who checked in morning
     eveningCheckIns: {}, // Track who checked in evening
     reflections: [] // Store daily reflections
 };
 
 // ---------- CONSTANTS ----------
-// UPDATED: Dua Dice prompts for families who don't live together
 const DICE_PROMPTS = [
     "📱 Send a voice note or text to a family member you haven't spoken to today",
     "🤲 Make dua for a family member who is far away right now",
@@ -75,7 +74,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Update goal display
     updateGoalDisplay();
     
-    // NEW: Update check-in displays
+    // Update check-in displays
     updateCheckInDisplay();
     
     // Set theme based on saved state
@@ -103,7 +102,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('addTreatBtn').addEventListener('click', addTreat);
     document.getElementById('claimRewardBtn').addEventListener('click', claimReward);
     
-    // NEW: Check-In Listeners
+    // Check-In Listeners
     document.getElementById('morningCheckInBtn').addEventListener('click', morningCheckIn);
     document.getElementById('eveningCheckInBtn').addEventListener('click', eveningCheckIn);
     document.getElementById('saveReflectionBtn').addEventListener('click', saveReflection);
@@ -135,7 +134,7 @@ function loadGame() {
             if (!gameState.treats) gameState.treats = [];
             if (!gameState.dailyContribution) gameState.dailyContribution = {};
             
-            // NEW: Initialize check-in properties
+            // Initialize check-in properties
             if (!gameState.morningCheckIns) gameState.morningCheckIns = {};
             if (!gameState.eveningCheckIns) gameState.eveningCheckIns = {};
             if (!gameState.reflections) gameState.reflections = [];
@@ -707,7 +706,7 @@ function spotSecretDeed() {
     showCelebration('Secret Deed!', `${spotter.name} spotted ${spotted.name}'s kindness! +5`, true, 5);
 }
 
-// ---------- DUA DICE (UPDATED FOR REMOTE FAMILIES) ----------
+// ---------- DUA DICE ----------
 function rollDice() {
     const roll = Math.floor(Math.random() * 6);
     const prompt = DICE_PROMPTS[roll];
@@ -926,592 +925,6 @@ function toggleHelp() {
     );
 }
 
-// ============================================
-// RAMADAN LEGACY QUEST - SCRIPT.JS
-// COMPLETE EDITION WITH:
-// - Login System (Email/Phone + Password)
-// - Multi-Family Support
-// - Family Switching Protection
-// - Data Persistence Per User
-// - 1100 Point Goal
-// - Remote Dua Dice
-// - Daily Check-Ins
-// ============================================
-
-// ---------- GAME STATE ----------
-let gameState = {
-    // User Account
-    currentUser: null,
-    users: {}, // Store multiple users
-    
-    // Current Family
-    familyCode: null,
-    families: {}, // Store multiple families per user
-    
-    // Game Data
-    players: [],
-    currentDay: 1,
-    totalPoints: 0,
-    logs: [],
-    weeklyQuest: 1,
-    darkMode: false,
-    
-    // 1100 Point Goal System
-    familyGoal: 1100,
-    goalProgress: 0,
-    goalAchieved: false,
-    treats: [],
-    dailyContribution: {},
-    
-    // Daily Check-Ins
-    morningCheckIns: {},
-    eveningCheckIns: {},
-    reflections: []
-};
-
-// ---------- CONSTANTS ----------
-const DICEPROMPTS = [
-    "📱 Send a voice note or text to a family member you haven't spoken to today",
-    "🤲 Make dua for a family member who is far away right now",
-    "💭 Share one thing you miss about being together during Ramadan",
-    "📸 Send a photo of your iftar/suhoor to the family group chat",
-    "🎙️ Record yourself reciting a short surah and share it with the family",
-    "🌍 Make dua for all the Muslims around the world fasting alone"
-];
-
-const WEEKLYQUESTS = [
-    "🌟 Week 1: Establish 5 family Ramadan traditions (even at a distance!)",
-    "🤝 Week 2: Contact 3 relatives or old friends you haven't spoken to",
-    "🕌 Week 3: Prepare for the last 10 nights - share your plans with each other",
-    "🎉 Week 4: Plan a virtual Eid celebration together"
-];
-
-const CHARACTERNAMES = {
-    guardian: 'The Guardian',
-    seeker: 'The Seeker',
-    nourisher: 'The Nourisher',
-    connector: 'The Connector',
-    healer: 'The Healer',
-    illuminator: 'The Illuminator'
-};
-
-// ---------- INITIALIZATION ----------
-document.addEventListener('DOMContentLoaded', function() {
-    console.log("🌟 Ramadan Legacy Quest - Private Family Edition!");
-    
-    // Load all users from localStorage
-    loadAllUsers();
-    
-    // Check if user is already logged in
-    checkAutoLogin();
-    
-    // Setup login/signup tabs
-    document.getElementById('showLoginBtn').addEventListener('click', showLoginForm);
-    document.getElementById('showSignupBtn').addEventListener('click', showSignupForm);
-    
-    // Setup login/signup buttons
-    document.getElementById('loginBtn').addEventListener('click', login);
-    document.getElementById('signupBtn').addEventListener('click', signup);
-    
-    // Setup confirmation modal buttons
-    document.getElementById('confirmNoBtn').addEventListener('click', closeConfirmation);
-    
-    // Setup logout button
-    document.getElementById('logoutBtn').addEventListener('click', logout);
-});
-
-// ---------- LOAD ALL USERS FROM STORAGE ----------
-function loadAllUsers() {
-    const savedUsers = localStorage.getItem('ramadanQuestUsers');
-    if (savedUsers) {
-        try {
-            gameState.users = JSON.parse(savedUsers);
-        } catch(e) {
-            gameState.users = {};
-        }
-    } else {
-        gameState.users = {};
-    }
-}
-
-// ---------- SAVE ALL USERS TO STORAGE ----------
-function saveAllUsers() {
-    localStorage.setItem('ramadanQuestUsers', JSON.stringify(gameState.users));
-}
-
-// ---------- CHECK AUTO LOGIN ----------
-function checkAutoLogin() {
-    const savedUserEmail = localStorage.getItem('ramadanQuestLastUser');
-    if (savedUserEmail && gameState.users[savedUserEmail]) {
-        // Auto login
-        gameState.currentUser = gameState.users[savedUserEmail];
-        gameState.currentUser.identifier = savedUserEmail;
-        
-        // Load user's data
-        loadUserData();
-        
-        // Hide login screen, show game
-        document.getElementById('loginScreen').style.display = 'none';
-        document.getElementById('gameContainer').style.display = 'block';
-        
-        // Initialize game
-        initializeGame();
-    }
-}
-
-// ---------- SHOW LOGIN FORM ----------
-function showLoginForm() {
-    document.getElementById('loginForm').style.display = 'block';
-    document.getElementById('signupForm').style.display = 'none';
-    document.getElementById('showLoginBtn').classList.add('active');
-    document.getElementById('showSignupBtn').classList.remove('active');
-}
-
-// ---------- SHOW SIGNUP FORM ----------
-function showSignupForm() {
-    document.getElementById('loginForm').style.display = 'none';
-    document.getElementById('signupForm').style.display = 'block';
-    document.getElementById('showSignupBtn').classList.add('active');
-    document.getElementById('showLoginBtn').classList.remove('active');
-}
-
-// ---------- LOGIN FUNCTION ----------
-function login() {
-    const identifier = document.getElementById('loginIdentifier').value.trim();
-    const password = document.getElementById('loginPassword').value.trim();
-    
-    if (!identifier || !password) {
-        showCelebration('Missing Information', 'Please enter both email/phone and password', false, 0);
-        return;
-    }
-    
-    // Check if user exists
-    if (!gameState.users[identifier]) {
-        showCelebration('Account Not Found', 'No account found with this email/phone. Please sign up!', false, 0);
-        return;
-    }
-    
-    // Check password
-    if (gameState.users[identifier].password !== password) {
-        showCelebration('Incorrect Password', 'Please try again', false, 0);
-        return;
-    }
-    
-    // Login successful
-    gameState.currentUser = gameState.users[identifier];
-    gameState.currentUser.identifier = identifier;
-    
-    // Save last logged in user
-    localStorage.setItem('ramadanQuestLastUser', identifier);
-    
-    // Load user's data
-    loadUserData();
-    
-    // Hide login screen, show game
-    document.getElementById('loginScreen').style.display = 'none';
-    document.getElementById('gameContainer').style.display = 'block';
-    
-    // Initialize game
-    initializeGame();
-    
-    showCelebration('Welcome Back!', `Assalamu Alaikum, ${gameState.currentUser.name}!`, true, 0);
-}
-
-// ---------- SIGNUP FUNCTION ----------
-function signup() {
-    const name = document.getElementById('signupName').value.trim();
-    const identifier = document.getElementById('signupIdentifier').value.trim();
-    const password = document.getElementById('signupPassword').value.trim();
-    const confirmPassword = document.getElementById('signupConfirmPassword').value.trim();
-    
-    if (!name || !identifier || !password) {
-        showCelebration('Missing Information', 'Please fill in all fields', false, 0);
-        return;
-    }
-    
-    if (password !== confirmPassword) {
-        showCelebration('Password Mismatch', 'Passwords do not match', false, 0);
-        return;
-    }
-    
-    if (password.length < 4) {
-        showCelebration('Password Too Short', 'Please use at least 4 characters', false, 0);
-        return;
-    }
-    
-    // Check if user already exists
-    if (gameState.users[identifier]) {
-        showCelebration('Account Exists', 'An account with this email/phone already exists. Please sign in.', false, 0);
-        return;
-    }
-    
-    // Create new user
-    const newUser = {
-        name: name,
-        password: password,
-        families: {}, // Store multiple families
-        createdAt: new Date().toISOString()
-    };
-    
-    // Save user
-    gameState.users[identifier] = newUser;
-    saveAllUsers();
-    
-    // Auto login
-    gameState.currentUser = newUser;
-    gameState.currentUser.identifier = identifier;
-    localStorage.setItem('ramadanQuestLastUser', identifier);
-    
-    // Initialize empty game state for new user
-    gameState.families = {};
-    gameState.familyCode = null;
-    gameState.players = [];
-    gameState.totalPoints = 0;
-    gameState.logs = [];
-    
-    // Save user data
-    saveUserData();
-    
-    // Hide login screen, show game
-    document.getElementById('loginScreen').style.display = 'none';
-    document.getElementById('gameContainer').style.display = 'block';
-    
-    // Initialize game
-    initializeGame();
-    
-    showCelebration('Account Created!', `Welcome, ${name}! Create or join a family to begin!`, true, 0);
-    
-    // Clear signup form
-    document.getElementById('signupName').value = '';
-    document.getElementById('signupIdentifier').value = '';
-    document.getElementById('signupPassword').value = '';
-    document.getElementById('signupConfirmPassword').value = '';
-}
-
-// ---------- LOGOUT FUNCTION ----------
-function logout() {
-    // Save current user data
-    saveUserData();
-    
-    // Clear current user
-    gameState.currentUser = null;
-    localStorage.removeItem('ramadanQuestLastUser');
-    
-    // Show login screen
-    document.getElementById('gameContainer').style.display = 'none';
-    document.getElementById('loginScreen').style.display = 'flex';
-    
-    // Clear forms
-    document.getElementById('loginIdentifier').value = '';
-    document.getElementById('loginPassword').value = '';
-    
-    showLoginForm();
-}
-
-// ---------- LOAD USER DATA ----------
-function loadUserData() {
-    const identifier = gameState.currentUser.identifier;
-    
-    if (gameState.users[identifier].gameData) {
-        // Load user's saved game data
-        const userData = gameState.users[identifier].gameData;
-        
-        // Restore game state
-        gameState.families = userData.families || {};
-        gameState.familyCode = userData.familyCode || null;
-        gameState.players = userData.players || [];
-        gameState.currentDay = userData.currentDay || 1;
-        gameState.totalPoints = userData.totalPoints || 0;
-        gameState.logs = userData.logs || [];
-        gameState.weeklyQuest = userData.weeklyQuest || 1;
-        gameState.darkMode = userData.darkMode || false;
-        gameState.goalAchieved = userData.goalAchieved || false;
-        gameState.treats = userData.treats || [];
-        gameState.dailyContribution = userData.dailyContribution || {};
-        gameState.morningCheckIns = userData.morningCheckIns || {};
-        gameState.eveningCheckIns = userData.eveningCheckIns || {};
-        gameState.reflections = userData.reflections || [];
-        
-        // If currently in a family, load that family's data
-        if (gameState.familyCode && gameState.families[gameState.familyCode]) {
-            const familyData = gameState.families[gameState.familyCode];
-            gameState.players = familyData.players || [];
-            gameState.totalPoints = familyData.totalPoints || 0;
-            gameState.logs = familyData.logs || [];
-            gameState.weeklyQuest = familyData.weeklyQuest || 1;
-            gameState.goalAchieved = familyData.goalAchieved || false;
-            gameState.treats = familyData.treats || [];
-            gameState.dailyContribution = familyData.dailyContribution || {};
-            gameState.morningCheckIns = familyData.morningCheckIns || {};
-            gameState.eveningCheckIns = familyData.eveningCheckIns || {};
-            gameState.reflections = familyData.reflections || [];
-        }
-    }
-    
-    // Update user display
-    document.getElementById('currentUserName').innerHTML = gameState.currentUser.name;
-    document.getElementById('currentUserIdentifier').innerHTML = gameState.currentUser.identifier;
-}
-
-// ---------- SAVE USER DATA ----------
-function saveUserData() {
-    const identifier = gameState.currentUser.identifier;
-    
-    // Save current family data
-    if (gameState.familyCode) {
-        if (!gameState.families) gameState.families = {};
-        
-        gameState.families[gameState.familyCode] = {
-            players: gameState.players,
-            totalPoints: gameState.totalPoints,
-            logs: gameState.logs,
-            weeklyQuest: gameState.weeklyQuest,
-            goalAchieved: gameState.goalAchieved,
-            treats: gameState.treats,
-            dailyContribution: gameState.dailyContribution,
-            morningCheckIns: gameState.morningCheckIns,
-            eveningCheckIns: gameState.eveningCheckIns,
-            reflections: gameState.reflections,
-            lastUpdated: new Date().toISOString()
-        };
-    }
-    
-    // Save all game data to user
-    gameState.users[identifier].gameData = {
-        families: gameState.families,
-        familyCode: gameState.familyCode,
-        players: gameState.players,
-        currentDay: gameState.currentDay,
-        totalPoints: gameState.totalPoints,
-        logs: gameState.logs,
-        weeklyQuest: gameState.weeklyQuest,
-        darkMode: gameState.darkMode,
-        goalAchieved: gameState.goalAchieved,
-        treats: gameState.treats,
-        dailyContribution: gameState.dailyContribution,
-        morningCheckIns: gameState.morningCheckIns,
-        eveningCheckIns: gameState.eveningCheckIns,
-        reflections: gameState.reflections
-    };
-    
-    saveAllUsers();
-}
-
-// ---------- RESET PAGE FOR NEW FAMILY (COMPLETE RESET) ----------
-function resetPageForNewFamily() {
-    // Reset all game data
-    gameState.familyCode = null;
-    gameState.players = [];
-    gameState.totalPoints = 0;
-    gameState.logs = [];
-    gameState.weeklyQuest = 1;
-    gameState.goalAchieved = false;
-    gameState.treats = [];
-    gameState.dailyContribution = {};
-    gameState.morningCheckIns = {};
-    gameState.eveningCheckIns = {};
-    gameState.reflections = [];
-    
-    // Reset displays
-    updateFamilyDisplay();
-    buildMoonTracker();
-    updateDisplay();
-    updateQuestDisplay();
-    updateGoalDisplay();
-    updateCheckInDisplay();
-    updateLogDisplay();
-    
-    // Reset dice result
-    document.getElementById('diceResult').innerHTML = '✨ Click ROLL for a family prompt ✨';
-    
-    addLog('🔄 Started new family. Create or join a family to begin!');
-}
-
-// ---------- SHOW CONFIRMATION MODAL ----------
-function showConfirmation(title, message, onConfirm) {
-    document.getElementById('confirmTitle').innerHTML = title;
-    document.getElementById('confirmMessage').innerHTML = message;
-    document.getElementById('confirmationModal').style.display = 'block';
-    document.getElementById('confirmOverlay').style.display = 'block';
-    
-    // Remove previous listener
-    document.getElementById('confirmYesBtn').removeEventListener('click', onConfirm);
-    
-    // Add new listener
-    document.getElementById('confirmYesBtn').addEventListener('click', function() {
-        onConfirm();
-        closeConfirmation();
-    });
-}
-
-function closeConfirmation() {
-    document.getElementById('confirmationModal').style.display = 'none';
-    document.getElementById('confirmOverlay').style.display = 'none';
-}
-
-// ---------- INITIALIZE GAME (After Login) ----------
-function initializeGame() {
-    // Set theme based on saved state
-    if (gameState.darkMode) {
-        document.body.classList.remove('light-mode');
-        document.body.classList.add('dark-mode');
-        document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
-    }
-
-    // ---------- EVENT LISTENERS ----------
-    document.getElementById('themeToggle').addEventListener('click', toggleTheme);
-    document.getElementById('joinFamilyBtn').addEventListener('click', joinFamily);
-    document.getElementById('createFamilyBtn').addEventListener('click', createFamily);
-    document.getElementById('joinGameBtn').addEventListener('click', joinGame);
-    document.getElementById('submitDailyBtn').addEventListener('click', submitDaily);
-    document.getElementById('spotDeedBtn').addEventListener('click', spotSecretDeed);
-    document.getElementById('rollDiceBtn').addEventListener('click', rollDice);
-    document.getElementById('completeQuestBtn').addEventListener('click', completeQuest);
-    document.getElementById('shareGameBtn').addEventListener('click', shareGame);
-    document.getElementById('resetDayBtn').addEventListener('click', resetDay);
-    document.getElementById('exportDataBtn').addEventListener('click', exportData);
-    document.getElementById('helpBtn').addEventListener('click', toggleHelp);
-    
-    // Treat System Listeners
-    document.getElementById('addTreatBtn').addEventListener('click', addTreat);
-    document.getElementById('claimRewardBtn').addEventListener('click', claimReward);
-    
-    // Check-In Listeners
-    document.getElementById('morningCheckInBtn').addEventListener('click', morningCheckIn);
-    document.getElementById('eveningCheckInBtn').addEventListener('click', eveningCheckIn);
-    document.getElementById('saveReflectionBtn').addEventListener('click', saveReflection);
-    
-    // Keyboard shortcut: Enter to join game
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter' && document.getElementById('playerName') === document.activeElement) {
-            joinGame();
-        }
-    });
-    
-    // Update displays
-    updateFamilyDisplay();
-    buildMoonTracker();
-    updateDisplay();
-    updateQuestDisplay();
-    updateGoalDisplay();
-    updateCheckInDisplay();
-    updateLogDisplay();
-}
-
-// ---------- CREATE FAMILY WITH CONFIRMATION ----------
-function createFamily() {
-    if (!gameState.currentUser) {
-        showCelebration('Please Login', 'You need to be logged in to create a family', false, 0);
-        return;
-    }
-    
-    // If already in a family, ask for confirmation
-    if (gameState.familyCode) {
-        showConfirmation(
-            '⚠️ Start New Family?',
-            `You are currently in family: ${gameState.familyCode}. Starting a new family will reset this page completely. Your current family data is saved and you can rejoin anytime.`,
-            function() {
-                performCreateFamily();
-            }
-        );
-    } else {
-        performCreateFamily();
-    }
-}
-
-function performCreateFamily() {
-    // Generate random 6-character family code
-    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-    let code = '';
-    for (let i = 0; i < 6; i++) {
-        code += chars[Math.floor(Math.random() * chars.length)];
-    }
-    
-    // Reset page completely
-    resetPageForNewFamily();
-    
-    // Set new family code
-    gameState.familyCode = code;
-    
-    updateFamilyDisplay();
-    addLog(`🏠 New family created! Code: ${code}`);
-    showCelebration('Family Created!', `Your family code is: ${code}`, true, 0);
-    saveUserData();
-}
-
-// ---------- JOIN FAMILY WITH PROTECTION ----------
-function joinFamily() {
-    if (!gameState.currentUser) {
-        showCelebration('Please Login', 'You need to be logged in to join a family', false, 0);
-        return;
-    }
-    
-    const input = document.getElementById('familyCodeInput');
-    const code = input.value.trim().toUpperCase();
-    
-    if (code.length < 3) {
-        showCelebration('Oops!', 'Please enter a valid family code', false, 0);
-        return;
-    }
-    
-    // If already in a family, ask for confirmation
-    if (gameState.familyCode) {
-        showConfirmation(
-            '⚠️ Switch Families?',
-            `You are currently in family: ${gameState.familyCode}. Switching to ${code} will reset this page completely. Your current family data is saved and you can rejoin anytime.`,
-            function() {
-                performJoinFamily(code);
-            }
-        );
-    } else {
-        performJoinFamily(code);
-    }
-}
-
-function performJoinFamily(code) {
-    // Reset page completely
-    resetPageForNewFamily();
-    
-    // Set new family code
-    gameState.familyCode = code;
-    
-    // Check if this family exists in user's saved families
-    if (gameState.families && gameState.families[code]) {
-        // Load existing family data
-        const familyData = gameState.families[code];
-        gameState.players = familyData.players || [];
-        gameState.totalPoints = familyData.totalPoints || 0;
-        gameState.logs = familyData.logs || [];
-        gameState.weeklyQuest = familyData.weeklyQuest || 1;
-        gameState.goalAchieved = familyData.goalAchieved || false;
-        gameState.treats = familyData.treats || [];
-        gameState.dailyContribution = familyData.dailyContribution || {};
-        gameState.morningCheckIns = familyData.morningCheckIns || {};
-        gameState.eveningCheckIns = familyData.eveningCheckIns || {};
-        gameState.reflections = familyData.reflections || [];
-        
-        // Update displays
-        buildMoonTracker();
-        updateDisplay();
-        updateQuestDisplay();
-        updateGoalDisplay();
-        updateCheckInDisplay();
-        updateLogDisplay();
-        
-        addLog(`🚪 Rejoined family: ${code} - Welcome back!`);
-        showCelebration('Welcome Back!', `You rejoined family: ${code}`, true, 0);
-    } else {
-        // New family
-        addLog(`🚪 Joined new family: ${code}`);
-        showCelebration('Welcome!', `You joined family: ${code}`, true, 0);
-    }
-    
-    updateFamilyDisplay();
-    input.value = '';
-    saveUserData();
-}
-
-
 // ===== TOGGLE ROLES SECTION =====
 function toggleRoles() {
     const content = document.getElementById('rolesContent');
@@ -1529,14 +942,3 @@ function toggleRoles() {
         icon.style.transform = 'rotate(0deg)';
     }
 }
-
-// ---------- REST OF THE FUNCTIONS (SAME AS BEFORE) ----------
-// ... (All previous game functions: toggleTheme, updateFamilyDisplay, 
-//      updateGoalDisplay, addTreat, claimReward, morningCheckIn, 
-//      eveningCheckIn, saveReflection, updateCheckInDisplay,
-//      buildMoonTracker, joinGame, submitDaily, spotSecretDeed,
-//      rollDice, completeQuest, updateDisplay, updateQuestDisplay,
-//      addLog, updateLogDisplay, showCelebration, closeModal,
-//      createConfetti, shareGame, resetDay, exportData, toggleHelp)
-
-// [CONTINUED WITH ALL PREVIOUS GAME FUNCTIONS...]
