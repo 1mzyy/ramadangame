@@ -15,6 +15,28 @@ let gameState = {
     reflections: []
 };
 
+// Firebase Configuration
+const firebaseConfig = {
+    apiKey: "AIzaSyBmJ1qKZqfJZqfJZqfJZqfJZqfJZqfJZqfJZq", // Replace with your Firebase config
+    authDomain: "ramadan-quest.firebaseapp.com",
+    databaseURL: "https://ramadan-quest-default-rtdb.firebaseio.com",
+    projectId: "ramadan-quest",
+    storageBucket: "ramadan-quest.appspot.com",
+    messagingSenderId: "123456789012",
+    appId: "1:123456789012:web:abc123def456"
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
+
+// Local player ID
+let playerId = localStorage.getItem('playerId') || 'player_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+localStorage.setItem('playerId', playerId);
+
+// Connection status
+let isConnected = false;
+
 // Constants
 const DICE_PROMPTS = [
     "Send a voice note to a family member you haven't spoken to today",
@@ -72,7 +94,144 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('saveReflectionBtn').addEventListener('click', saveReflection);
 });
 
-// Save/Load
+// Firebase Connection
+function connectToFamily(familyCode) {
+    if (!familyCode) return;
+    
+    const statusRef = database.ref('.info/connected');
+    statusRef.on('value', (snap) => {
+        if (snap.val()) {
+            isConnected = true;
+            document.getElementById('connectionStatus').textContent = '🟢 Connected';
+            document.getElementById('connectionStatus').classList.add('connected');
+            
+            // Update online status
+            const onlineRef = database.ref(`families/${familyCode}/online/${playerId}`);
+            onlineRef.onDisconnect().remove();
+            onlineRef.set({
+                lastSeen: Date.now(),
+                playerName: gameState.players[gameState.players.length - 1]?.name || 'Anonymous'
+            });
+            
+            // Listen for online count
+            database.ref(`families/${familyCode}/online`).on('value', (snapshot) => {
+                const count = snapshot.exists() ? Object.keys(snapshot.val()).length : 0;
+                document.getElementById('onlineCount').textContent = count;
+            });
+            
+            // Listen for family data
+            listenToFamilyData(familyCode);
+        } else {
+            isConnected = false;
+            document.getElementById('connectionStatus').textContent = '🔴 Disconnected';
+            document.getElementById('connectionStatus').classList.remove('connected');
+        }
+    });
+}
+
+function listenToFamilyData(familyCode) {
+    // Listen to players
+    database.ref(`families/${familyCode}/players`).on('value', (snapshot) => {
+        if (snapshot.exists()) {
+            const players = Object.values(snapshot.val());
+            gameState.players = players;
+            updateDisplay();
+            updateCheckInDisplay();
+        }
+    });
+    
+    // Listen to total points
+    database.ref(`families/${familyCode}/totalPoints`).on('value', (snapshot) => {
+        gameState.totalPoints = snapshot.val() || 0;
+        updateDisplay();
+        updateGoalDisplay();
+    });
+    
+    // Listen to treats
+    database.ref(`families/${familyCode}/treats`).on('value', (snapshot) => {
+        gameState.treats = snapshot.val() ? Object.values(snapshot.val()) : [];
+        updateGoalDisplay();
+    });
+    
+    // Listen to check-ins
+    database.ref(`families/${familyCode}/morningCheckIns/day${gameState.currentDay}`).on('value', (snapshot) => {
+        gameState.morningCheckIns[`day${gameState.currentDay}`] = snapshot.val() || [];
+        updateCheckInDisplay();
+    });
+    
+    database.ref(`families/${familyCode}/eveningCheckIns/day${gameState.currentDay}`).on('value', (snapshot) => {
+        gameState.eveningCheckIns[`day${gameState.currentDay}`] = snapshot.val() || [];
+        updateCheckInDisplay();
+    });
+    
+    // Listen to reflections
+    database.ref(`families/${familyCode}/reflections`).limitToLast(20).on('value', (snapshot) => {
+        gameState.reflections = snapshot.val() ? Object.values(snapshot.val()).reverse() : [];
+        updateCheckInDisplay();
+    });
+    
+    // Listen to logs
+    database.ref(`families/${familyCode}/logs`).limitToLast(25).on('value', (snapshot) => {
+        gameState.logs = snapshot.val() ? Object.values(snapshot.val()).reverse() : [];
+        updateLogDisplay();
+    });
+    
+    // Listen to weekly quest
+    database.ref(`families/${familyCode}/weeklyQuest`).on('value', (snapshot) => {
+        gameState.weeklyQuest = snapshot.val() || 1;
+        updateQuestDisplay();
+    });
+    
+    // Listen to goal achieved
+    database.ref(`families/${familyCode}/goalAchieved`).on('value', (snapshot) => {
+        gameState.goalAchieved = snapshot.val() || false;
+        updateGoalDisplay();
+    });
+    
+    // Listen to live activity
+    database.ref(`families/${familyCode}/live`).limitToLast(10).on('value', (snapshot) => {
+        if (snapshot.exists()) {
+            const activities = Object.values(snapshot.val()).reverse();
+            updateLiveFeed(activities);
+        }
+    });
+}
+
+function updateLiveFeed(activities) {
+    const feed = document.getElementById('liveFeed');
+    feed.innerHTML = '';
+    activities.forEach(activity => {
+        const entry = document.createElement('div');
+        entry.className = 'live-entry';
+        entry.innerHTML = `✨ ${activity}`;
+        feed.appendChild(entry);
+    });
+}
+
+function addLiveActivity(message) {
+    if (!gameState.familyCode) return;
+    
+    const liveRef = database.ref(`families/${gameState.familyCode}/live`).push();
+    liveRef.set({
+        message: message,
+        timestamp: Date.now(),
+        playerName: gameState.players[gameState.players.length - 1]?.name || 'System'
+    });
+    
+    // Keep only last 50 activities
+    database.ref(`families/${gameState.familyCode}/live`).limitToLast(50).once('value', (snapshot) => {
+        const activities = snapshot.val();
+        if (activities) {
+            const keys = Object.keys(activities);
+            if (keys.length > 50) {
+                const oldestKey = keys[0];
+                database.ref(`families/${gameState.familyCode}/live/${oldestKey}`).remove();
+            }
+        }
+    });
+}
+
+// Save/Load (local backup)
 function saveGame() {
     localStorage.setItem('ramadanQuest', JSON.stringify(gameState));
 }
@@ -112,8 +271,20 @@ function createFamily() {
     
     gameState.familyCode = code;
     resetGameState();
+    
+    // Initialize Firebase for this family
+    database.ref(`families/${code}`).set({
+        createdAt: Date.now(),
+        createdBy: playerId,
+        totalPoints: 0,
+        weeklyQuest: 1,
+        goalAchieved: false
+    });
+    
+    connectToFamily(code);
     updateAllDisplays();
     addLog(`New family created! Code: ${code}`);
+    addLiveActivity(`🏠 Family ${code} was created!`);
     showCelebration('Family Created!', `Your code: ${code}`);
     saveGame();
 }
@@ -127,10 +298,15 @@ function joinFamily() {
     
     gameState.familyCode = code;
     resetGameState();
+    
+    connectToFamily(code);
     updateAllDisplays();
     addLog(`Joined family: ${code}`);
+    addLiveActivity(`🚪 ${gameState.players[gameState.players.length - 1]?.name || 'Someone'} joined the family!`);
     showCelebration('Welcome!', `You joined family: ${code}`);
     saveGame();
+    
+    document.getElementById('familyCodeInput').value = '';
 }
 
 function resetGameState() {
@@ -178,7 +354,21 @@ function buildMoonTracker() {
             buildMoonTracker();
             updateDisplay();
             updateCheckInDisplay();
+            
+            // Update check-in listeners for new day
+            if (gameState.familyCode) {
+                database.ref(`families/${gameState.familyCode}/morningCheckIns/day${i}`).on('value', (snapshot) => {
+                    gameState.morningCheckIns[`day${i}`] = snapshot.val() || [];
+                    updateCheckInDisplay();
+                });
+                database.ref(`families/${gameState.familyCode}/eveningCheckIns/day${i}`).on('value', (snapshot) => {
+                    gameState.eveningCheckIns[`day${i}`] = snapshot.val() || [];
+                    updateCheckInDisplay();
+                });
+            }
+            
             addLog(`Day changed to ${i}`);
+            addLiveActivity(`📅 Day changed to ${i}`);
             saveGame();
         };
         
@@ -201,18 +391,29 @@ function joinGame() {
         return;
     }
     
-    gameState.players.push({
-        id: Date.now(),
-        name,
-        character,
+    const player = {
+        id: playerId,
+        name: name,
+        character: character,
         points: 0,
-        totalContribution: 0
+        totalContribution: 0,
+        joinedAt: Date.now()
+    };
+    
+    // Save to Firebase
+    database.ref(`families/${gameState.familyCode}/players/${playerId}`).set(player);
+    
+    // Update online status with name
+    database.ref(`families/${gameState.familyCode}/online/${playerId}`).update({
+        playerName: name
     });
     
+    gameState.players.push(player);
     saveGame();
     updateDisplay();
     updateCheckInDisplay();
     addLog(`${name} joined as ${CHARACTER_NAMES[character]}`);
+    addLiveActivity(`✨ ${name} joined as ${CHARACTER_NAMES[character]}!`);
     showCelebration('Welcome!', `${name} joined the quest!`);
     
     document.getElementById('playerName').value = '';
@@ -225,13 +426,15 @@ function submitDaily() {
         return;
     }
 
-    const player = gameState.players[gameState.players.length - 1];
-    const total = [
-        document.getElementById('fastSelect').value,
-        document.getElementById('quranSelect').value,
-        document.getElementById('prayerSelect').value,
-        document.getElementById('missionSelect').value
-    ].reduce((a, b) => a + parseInt(b), 0);
+    const player = gameState.players.find(p => p.id === playerId);
+    if (!player) return;
+    
+    const fastPoints = parseInt(document.getElementById('fastSelect').value) || 0;
+    const quranPoints = parseInt(document.getElementById('quranSelect').value) || 0;
+    const prayerPoints = parseInt(document.getElementById('prayerSelect').value) || 0;
+    const missionPoints = parseInt(document.getElementById('missionSelect').value) || 0;
+    
+    const total = fastPoints + quranPoints + prayerPoints + missionPoints;
     
     if (total === 0) {
         showCelebration('No Points', 'Every small step counts!', false);
@@ -242,16 +445,33 @@ function submitDaily() {
     player.totalContribution += total;
     gameState.totalPoints += total;
     
+    // Update in Firebase
+    database.ref(`families/${gameState.familyCode}/players/${playerId}`).update({
+        points: player.points,
+        totalContribution: player.totalContribution
+    });
+    
+    database.ref(`families/${gameState.familyCode}/totalPoints`).set(gameState.totalPoints);
+    
+    // Add to daily contribution
+    const today = `day${gameState.currentDay}`;
+    database.ref(`families/${gameState.familyCode}/dailyContributions/${today}/${playerId}`).set({
+        points: total,
+        name: player.name
+    });
+    
     saveGame();
     updateDisplay();
     updateGoalDisplay();
     addLog(`${player.name} earned ${total} points`);
+    addLiveActivity(`📊 ${player.name} earned +${total} points!`);
     showCelebration('Points Added!', `+${total} points!`, true, total);
     
     // Reset selects
-    ['fastSelect', 'quranSelect', 'prayerSelect', 'missionSelect'].forEach(id => {
-        document.getElementById(id).selectedIndex = 0;
-    });
+    document.getElementById('fastSelect').selectedIndex = 0;
+    document.getElementById('quranSelect').selectedIndex = 0;
+    document.getElementById('prayerSelect').selectedIndex = 0;
+    document.getElementById('missionSelect').selectedIndex = 0;
 }
 
 // Secret Deed
@@ -261,18 +481,34 @@ function spotSecretDeed() {
         return;
     }
     
-    const players = gameState.players;
-    const spotter = players[players.length - 1];
-    const spotted = players.filter(p => p.id !== spotter.id)[Math.floor(Math.random() * (players.length - 1))];
+    const spotter = gameState.players.find(p => p.id === playerId);
+    if (!spotter) return;
+    
+    const otherPlayers = gameState.players.filter(p => p.id !== playerId);
+    const spotted = otherPlayers[Math.floor(Math.random() * otherPlayers.length)];
     
     spotter.points += 2;
     spotted.points += 3;
     gameState.totalPoints += 5;
     
+    // Update in Firebase
+    database.ref(`families/${gameState.familyCode}/players/${playerId}`).update({
+        points: spotter.points,
+        totalContribution: spotter.totalContribution + 2
+    });
+    
+    database.ref(`families/${gameState.familyCode}/players/${spotted.id}`).update({
+        points: spotted.points,
+        totalContribution: spotted.totalContribution + 3
+    });
+    
+    database.ref(`families/${gameState.familyCode}/totalPoints`).set(gameState.totalPoints);
+    
     saveGame();
     updateDisplay();
     updateGoalDisplay();
     addLog(`${spotter.name} spotted ${spotted.name}'s secret deed! +5 points`);
+    addLiveActivity(`👀 ${spotter.name} spotted ${spotted.name}'s kindness! +5`);
     showCelebration('Secret Deed!', `+5 family points!`, true, 5);
 }
 
@@ -289,13 +525,23 @@ function rollDice() {
     `;
     
     addLog(`Dua Dice rolled: "${prompt}"`);
+    addLiveActivity(`🎲 Dua Dice rolled: ${prompt.substring(0, 50)}...`);
     
     if (gameState.players.length > 0) {
         gameState.players.forEach(p => {
             p.points += 1;
             p.totalContribution += 1;
+            
+            // Update each player in Firebase
+            database.ref(`families/${gameState.familyCode}/players/${p.id}`).update({
+                points: p.points,
+                totalContribution: p.totalContribution
+            });
         });
+        
         gameState.totalPoints += gameState.players.length;
+        database.ref(`families/${gameState.familyCode}/totalPoints`).set(gameState.totalPoints);
+        
         saveGame();
         updateDisplay();
         updateGoalDisplay();
@@ -315,16 +561,29 @@ function completeQuest() {
     }
     
     const bonus = gameState.weeklyQuest * 5;
+    
     gameState.players.forEach(p => {
         p.points += bonus;
         p.totalContribution += bonus;
+        
+        // Update each player in Firebase
+        database.ref(`families/${gameState.familyCode}/players/${p.id}`).update({
+            points: p.points,
+            totalContribution: p.totalContribution
+        });
     });
-    gameState.totalPoints += bonus * gameState.players.length;
     
-    addLog(`Weekly Quest ${gameState.weeklyQuest} completed! +${bonus} each!`);
+    gameState.totalPoints += bonus * gameState.players.length;
+    gameState.weeklyQuest = Math.min(gameState.weeklyQuest + 1, 4);
+    
+    // Update in Firebase
+    database.ref(`families/${gameState.familyCode}/totalPoints`).set(gameState.totalPoints);
+    database.ref(`families/${gameState.familyCode}/weeklyQuest`).set(gameState.weeklyQuest);
+    
+    addLog(`Weekly Quest ${gameState.weeklyQuest - 1} completed! +${bonus} each!`);
+    addLiveActivity(`🏆 Weekly Quest completed! +${bonus} points each!`);
     showCelebration('Quest Complete!', `+${bonus} points each!`, true, bonus * gameState.players.length);
     
-    gameState.weeklyQuest = Math.min(gameState.weeklyQuest + 1, 4);
     saveGame();
     updateDisplay();
     updateQuestDisplay();
@@ -341,7 +600,12 @@ function updateGoalDisplay() {
     if (!gameState.goalAchieved && gameState.totalPoints >= 1100) {
         gameState.goalAchieved = true;
         document.getElementById('goalCelebration').style.display = 'block';
+        
+        // Update in Firebase
+        database.ref(`families/${gameState.familyCode}/goalAchieved`).set(true);
+        
         addLog('🎉 FAMILY GOAL ACHIEVED! 1100 POINTS! 🎉');
+        addLiveActivity('🎉🎉🎉 FAMILY GOAL ACHIEVED! 1100 POINTS! 🎉🎉🎉');
         showCelebration('GOAL COMPLETE!', 'Time to celebrate!', true, 0);
         createConfetti(100);
     }
@@ -353,14 +617,17 @@ function updateTreatsDisplay() {
     const list = document.getElementById('treatList');
     document.getElementById('treatCount').textContent = gameState.treats.length;
     
-    list.innerHTML = gameState.treats.length ? '' : '<div style="padding: 15px; text-align: center;">✨ Add your favorite treats! ✨</div>';
-    
-    gameState.treats.forEach(treat => {
-        const item = document.createElement('div');
-        item.className = 'treat-item';
-        item.innerHTML = `🎁 ${treat.name} <span style="color: #d4af37;">by ${treat.addedBy}</span>`;
-        list.appendChild(item);
-    });
+    list.innerHTML = '';
+    if (gameState.treats.length === 0) {
+        list.innerHTML = '<div style="padding: 15px; text-align: center;">✨ Add your favorite treats! ✨</div>';
+    } else {
+        gameState.treats.forEach(treat => {
+            const item = document.createElement('div');
+            item.className = 'treat-item';
+            item.innerHTML = `🎁 ${treat.name} <span style="color: #d4af37;">by ${treat.addedBy}</span>`;
+            list.appendChild(item);
+        });
+    }
 }
 
 function addTreat() {
@@ -372,13 +639,20 @@ function addTreat() {
         return;
     }
     
-    gameState.treats.push({
-        name,
-        addedBy: gameState.players[gameState.players.length - 1]?.name || 'Family Member'
-    });
+    const treat = {
+        name: name,
+        addedBy: gameState.players.find(p => p.id === playerId)?.name || 'Family Member',
+        timestamp: Date.now()
+    };
     
+    // Save to Firebase
+    const treatRef = database.ref(`families/${gameState.familyCode}/treats`).push();
+    treatRef.set(treat);
+    
+    gameState.treats.push(treat);
     updateTreatsDisplay();
     addLog(`Treat added: ${name}`);
+    addLiveActivity(`🎁 ${treat.addedBy} added a treat: ${name}`);
     showCelebration('Treat Added!', name, true, 0);
     input.value = '';
     saveGame();
@@ -397,10 +671,39 @@ function claimReward() {
     
     const index = Math.floor(Math.random() * gameState.treats.length);
     const treat = gameState.treats[index];
+    
+    // Remove from Firebase
+    database.ref(`families/${gameState.familyCode}/treats`).once('value', (snapshot) => {
+        const treats = snapshot.val();
+        if (treats) {
+            const keys = Object.keys(treats);
+            if (keys[index]) {
+                database.ref(`families/${gameState.familyCode}/treats/${keys[index]}`).remove();
+            }
+        }
+    });
+    
     gameState.treats.splice(index, 1);
     
+    const claimer = gameState.players.find(p => p.id === playerId);
+    if (claimer) {
+        claimer.points += 10;
+        claimer.totalContribution += 10;
+        gameState.totalPoints += 10;
+        
+        // Update in Firebase
+        database.ref(`families/${gameState.familyCode}/players/${playerId}`).update({
+            points: claimer.points,
+            totalContribution: claimer.totalContribution
+        });
+        database.ref(`families/${gameState.familyCode}/totalPoints`).set(gameState.totalPoints);
+    }
+    
     updateTreatsDisplay();
+    updateDisplay();
+    updateGoalDisplay();
     addLog(`Treat claimed: ${treat.name}!`);
+    addLiveActivity(`🎉 ${claimer?.name || 'Someone'} claimed the treat: ${treat.name}!`);
     showCelebration('TREAT CLAIMED!', `🎁 ${treat.name} 🎁`, true, 10);
     saveGame();
 }
@@ -409,39 +712,53 @@ function claimReward() {
 function morningCheckIn() {
     if (!gameState.familyCode || gameState.players.length === 0) return;
     
-    const player = gameState.players[gameState.players.length - 1];
+    const player = gameState.players.find(p => p.id === playerId);
+    if (!player) return;
+    
     const today = `day${gameState.currentDay}`;
     
-    if (!gameState.morningCheckIns[today]) gameState.morningCheckIns[today] = [];
-    if (gameState.morningCheckIns[today].includes(player.name)) {
-        showCelebration('Already Checked In!', 'You already checked in today', false);
-        return;
-    }
-    
-    gameState.morningCheckIns[today].push(player.name);
-    updateCheckInDisplay();
-    addLog(`${player.name} checked in for Fajr`);
-    showCelebration('Morning Check-In', 'Ramadan Mubarak! ☀️', false);
-    saveGame();
+    // Check if already checked in
+    database.ref(`families/${gameState.familyCode}/morningCheckIns/${today}`).once('value', (snapshot) => {
+        const checkIns = snapshot.val() || [];
+        if (checkIns.includes(player.name)) {
+            showCelebration('Already Checked In!', 'You already checked in today', false);
+            return;
+        }
+        
+        // Add check-in
+        checkIns.push(player.name);
+        database.ref(`families/${gameState.familyCode}/morningCheckIns/${today}`).set(checkIns);
+        
+        addLog(`${player.name} checked in for Fajr`);
+        addLiveActivity(`☀️ ${player.name} checked in for Fajr`);
+        showCelebration('Morning Check-In', 'Ramadan Mubarak! ☀️', false);
+    });
 }
 
 function eveningCheckIn() {
     if (!gameState.familyCode || gameState.players.length === 0) return;
     
-    const player = gameState.players[gameState.players.length - 1];
+    const player = gameState.players.find(p => p.id === playerId);
+    if (!player) return;
+    
     const today = `day${gameState.currentDay}`;
     
-    if (!gameState.eveningCheckIns[today]) gameState.eveningCheckIns[today] = [];
-    if (gameState.eveningCheckIns[today].includes(player.name)) {
-        showCelebration('Already Checked In!', 'You already checked in today', false);
-        return;
-    }
-    
-    gameState.eveningCheckIns[today].push(player.name);
-    updateCheckInDisplay();
-    addLog(`${player.name} checked in for Maghrib`);
-    showCelebration('Evening Check-In', 'Iftar Mubarak! 🌙', false);
-    saveGame();
+    // Check if already checked in
+    database.ref(`families/${gameState.familyCode}/eveningCheckIns/${today}`).once('value', (snapshot) => {
+        const checkIns = snapshot.val() || [];
+        if (checkIns.includes(player.name)) {
+            showCelebration('Already Checked In!', 'You already checked in today', false);
+            return;
+        }
+        
+        // Add check-in
+        checkIns.push(player.name);
+        database.ref(`families/${gameState.familyCode}/eveningCheckIns/${today}`).set(checkIns);
+        
+        addLog(`${player.name} checked in for Maghrib`);
+        addLiveActivity(`🌙 ${player.name} checked in for Maghrib`);
+        showCelebration('Evening Check-In', 'Iftar Mubarak! 🌙', false);
+    });
 }
 
 function saveReflection() {
@@ -450,19 +767,20 @@ function saveReflection() {
     
     if (!text) return;
     
-    gameState.reflections.unshift({
-        player: gameState.players[gameState.players.length - 1]?.name || 'Family Member',
+    const reflection = {
+        player: gameState.players.find(p => p.id === playerId)?.name || 'Family Member',
         day: gameState.currentDay,
-        text
-    });
+        text: text,
+        timestamp: Date.now()
+    };
     
-    if (gameState.reflections.length > 20) gameState.reflections.pop();
+    // Save to Firebase
+    database.ref(`families/${gameState.familyCode}/reflections`).push(reflection);
     
-    updateCheckInDisplay();
     addLog('New reflection shared');
+    addLiveActivity(`💭 ${reflection.player} shared a reflection`);
     showCelebration('Reflection Saved', 'JazakAllah khair! 💚', false);
     input.value = '';
-    saveGame();
 }
 
 function updateCheckInDisplay() {
@@ -475,31 +793,43 @@ function updateCheckInDisplay() {
     document.getElementById('eveningCheckInCount').textContent = `${evening.length} / ${gameState.players.length}`;
     
     const morningList = document.getElementById('morningCheckInList');
-    morningList.innerHTML = morning.length ? '' : '<div>No check-ins yet</div>';
-    morning.forEach(name => {
-        const el = document.createElement('span');
-        el.className = 'checkin-badge';
-        el.textContent = `☀️ ${name}`;
-        morningList.appendChild(el);
-    });
+    morningList.innerHTML = '';
+    if (morning.length === 0) {
+        morningList.innerHTML = '<div>No check-ins yet</div>';
+    } else {
+        morning.forEach(name => {
+            const el = document.createElement('span');
+            el.style.cssText = 'display: inline-block; padding: 5px 10px; margin: 3px; background: rgba(212,175,55,0.1); border-radius: 20px;';
+            el.textContent = `☀️ ${name}`;
+            morningList.appendChild(el);
+        });
+    }
     
     const eveningList = document.getElementById('eveningCheckInList');
-    eveningList.innerHTML = evening.length ? '' : '<div>No check-ins yet</div>';
-    evening.forEach(name => {
-        const el = document.createElement('span');
-        el.className = 'checkin-badge';
-        el.textContent = `🌙 ${name}`;
-        eveningList.appendChild(el);
-    });
+    eveningList.innerHTML = '';
+    if (evening.length === 0) {
+        eveningList.innerHTML = '<div>No check-ins yet</div>';
+    } else {
+        evening.forEach(name => {
+            const el = document.createElement('span');
+            el.style.cssText = 'display: inline-block; padding: 5px 10px; margin: 3px; background: rgba(212,175,55,0.1); border-radius: 20px;';
+            el.textContent = `🌙 ${name}`;
+            eveningList.appendChild(el);
+        });
+    }
     
     const reflectionsList = document.getElementById('reflectionsList');
-    reflectionsList.innerHTML = gameState.reflections.length ? '' : '<div>No reflections yet</div>';
-    gameState.reflections.slice(0, 10).forEach(ref => {
-        const el = document.createElement('div');
-        el.className = 'reflection-item';
-        el.innerHTML = `<strong>${ref.player}</strong> (Day ${ref.day}): "${ref.text}"`;
-        reflectionsList.appendChild(el);
-    });
+    reflectionsList.innerHTML = '';
+    if (gameState.reflections.length === 0) {
+        reflectionsList.innerHTML = '<div>No reflections yet</div>';
+    } else {
+        gameState.reflections.slice(0, 10).forEach(ref => {
+            const el = document.createElement('div');
+            el.style.cssText = 'padding: 10px; margin: 5px 0; background: rgba(127,168,106,0.1); border-radius: 10px;';
+            el.innerHTML = `<strong>${ref.player}</strong> (Day ${ref.day}): "${ref.text}"`;
+            reflectionsList.appendChild(el);
+        });
+    }
 }
 
 // Display Updates
@@ -520,7 +850,7 @@ function updateDisplay() {
         div.className = 'player';
         div.innerHTML = `
             <div>
-                <strong>${p.name}</strong><br>
+                <strong>${p.name} ${p.id === playerId ? '(You)' : ''}</strong><br>
                 <small>${CHARACTER_NAMES[p.character]}</small>
             </div>
             <div class="player-points">${p.points}</div>
@@ -537,7 +867,17 @@ function updateQuestDisplay() {
 // Log Functions
 function addLog(message) {
     const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
-    gameState.logs.unshift(`[${time}] ${message}`);
+    const logEntry = `[${time}] ${message}`;
+    
+    // Save to Firebase
+    if (gameState.familyCode) {
+        database.ref(`families/${gameState.familyCode}/logs`).push({
+            message: logEntry,
+            timestamp: Date.now()
+        });
+    }
+    
+    gameState.logs.unshift(logEntry);
     if (gameState.logs.length > 25) gameState.logs.pop();
     updateLogDisplay();
     saveGame();
@@ -601,7 +941,7 @@ function createConfetti(count = 40) {
 
 // Utility Functions
 function shareGame() {
-    const text = `Join our Ramadan family quest! Code: ${gameState.familyCode || 'Create one!'}`;
+    const text = `Join our Ramadan family quest! Family code: ${gameState.familyCode || 'Create one!'}`;
     
     if (navigator.share) {
         navigator.share({ title: 'Ramadan Legacy Quest', text, url: window.location.href });
@@ -618,6 +958,7 @@ function resetDay() {
         updateDisplay();
         updateCheckInDisplay();
         addLog(`Day ${gameState.currentDay} begins`);
+        addLiveActivity(`🌙 Day ${gameState.currentDay} begins`);
         showCelebration('New Day', `Welcome to Day ${gameState.currentDay}`, true);
         saveGame();
     } else {
@@ -639,7 +980,7 @@ function exportData() {
 
 function toggleHelp() {
     showCelebration('How to Play', 
-        '1️⃣ Join/Create family\n2️⃣ Choose character\n3️⃣ Log daily worship\n4️⃣ Roll Dua Dice\n5️⃣ Complete quests\n\n🎯 Goal: 1100 points!',
+        '1️⃣ Join/Create family\n2️⃣ Choose character\n3️⃣ Log daily worship\n4️⃣ Roll Dua Dice\n5️⃣ Complete quests\n\n🎯 Goal: 1100 points!\n\n👥 Family members now see each other in real-time!',
         false);
 }
 
@@ -655,3 +996,13 @@ function toggleRoles() {
         icon.textContent = '▼';
     }
 }
+
+// Add keyframe animation for confetti
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes fall {
+        0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
+        100% { transform: translateY(120vh) rotate(720deg); opacity: 0; }
+    }
+`;
+document.head.appendChild(style);
